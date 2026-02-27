@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { prisma } from "./lib/prisma";
 
 dotenv.config();
 
@@ -15,4 +16,9 @@ app.get("/health", (_req, res) => {
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, () => {
   console.log(`API running at http://localhost:${PORT}`);
+});
+
+app.get("/test-db", async (_req, res) => {
+  const users = await prisma.user.findMany();
+  res.json(users);
 });
