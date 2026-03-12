@@ -10,6 +10,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 app.use("/auth", authRouter);
 
 app.get("/health", (_req, res) => {
@@ -22,6 +23,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/test-db", async (_req, res) => {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      createdAt: true,
+    },
+  });
+
   res.json(users);
 });
