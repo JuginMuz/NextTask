@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { login, register } from "./lib/auth";
 import { saveToken, getToken, clearToken } from "./lib/session";
-import { createTask, getTasks, type Task } from "./lib/tasks";
+import {
+  createTask,
+  deleteTask,
+  getTasks,
+  updateTask,
+  type Task,
+} from "./lib/tasks";
 
 function App() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -91,6 +97,48 @@ function App() {
     }
   }
 
+async function handleToggleTask(taskId: string, completed: boolean) {
+  if (!token) {
+    setError("You must be logged in");
+    return;
+  }
+
+  try {
+    setError("");
+    const updated = await updateTask(taskId, completed, token);
+
+    setTasks((prev) =>
+      prev.map((task) => (task.id === taskId ? updated : task))
+    );
+  } catch (err) {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Failed to update task");
+    }
+  }
+}
+
+async function handleDeleteTask(taskId: string) {
+  if (!token) {
+    setError("You must be logged in");
+    return;
+  }
+
+  try {
+    setError("");
+    await deleteTask(taskId, token);
+    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+    setMessage("Task deleted successfully");
+  } catch (err) {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Failed to delete task");
+    }
+  }
+}
+
   function handleLogout() {
     clearToken();
     setToken(null);
@@ -152,18 +200,46 @@ function App() {
               <p className="text-slate-600">No tasks yet. Add your first one.</p>
             ) : (
               <ul className="space-y-3">
-                {tasks.map((task) => (
-                  <li
-                    key={task.id}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
-                  >
-                    <p className="font-medium text-slate-900">{task.title}</p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {task.completed ? "Completed" : "Not completed"}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+                  {tasks.map((task) => (
+                    <li
+                      key={task.id}
+                      className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <p
+                            className={`font-medium ${
+                              task.completed
+                                ? "text-slate-400 line-through"
+                                : "text-slate-900"
+                            }`}
+                          >
+                            {task.title}
+                          </p>
+                          <p className="mt-1 text-sm text-slate-500">
+                            {task.completed ? "Completed" : "Not completed"}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleToggleTask(task.id, !task.completed)}
+                            className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                          >
+                            {task.completed ? "Undo" : "Complete"}
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteTask(task.id)}
+                            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
             )}
           </div>
 
