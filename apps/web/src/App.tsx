@@ -3,7 +3,12 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import { ThemeProvider } from "./lib/theme";
+import AppLayout from "./components/AppLayout";
 
+// NEW pages (create empty for now)
+import ProjectsPage from "./pages/ProjectsPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
 
 function App() {
   return (
@@ -13,10 +18,15 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
 
           <Route path="/login" element={<LoginPage />} />
-
           <Route path="/register" element={<RegisterPage />} />
 
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* APP LAYOUT WRAP */}
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
