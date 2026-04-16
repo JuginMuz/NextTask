@@ -7,39 +7,88 @@ type TaskItemProps = {
 };
 
 function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
+  const statusLabel = task.completed ? "Completed" : "Pending";
+  const statusSymbol = task.completed ? "✓" : "○";
+
   return (
-    <li className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <p
-            className={`font-medium ${
-              task.completed ? "text-slate-400 line-through" : "text-slate-900"
+    <article
+      className="rounded-2xl p-4 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <h3
+            className={`text-lg font-semibold break-words ${
+              task.completed ? "line-through opacity-80" : ""
             }`}
+            style={{ color: "var(--text)" }}
           >
             {task.title}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
-            {task.completed ? "Completed" : "Not completed"}
-          </p>
+          </h3>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+              style={{
+                backgroundColor: task.completed
+                  ? "rgba(16, 185, 129, 0.18)"
+                  : "rgba(59, 130, 246, 0.18)",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+              }}
+              aria-label={`Task status: ${statusLabel}`}
+            >
+              <span aria-hidden="true">{statusSymbol}</span>
+              {statusLabel}
+            </span>
+
+            <span
+              className="text-sm"
+              style={{ color: "var(--muted)" }}
+            >
+              {task.completed
+                ? "This micro-task has been finished."
+                : "This micro-task still needs to be done."}
+            </span>
+          </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-3">
           <button
+            type="button"
             onClick={() => onToggle(task.id, !task.completed)}
-            className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{
+              backgroundColor: task.completed ? "#0f766e" : "#2563eb",
+              color: "#ffffff",
+            }}
+            aria-label={
+              task.completed
+                ? `Mark "${task.title}" as not completed`
+                : `Mark "${task.title}" as completed`
+            }
           >
-            {task.completed ? "Undo" : "Complete"}
+            {task.completed ? "Mark as pending" : "Mark as completed"}
           </button>
 
           <button
+            type="button"
             onClick={() => onDelete(task.id)}
-            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{
+              backgroundColor: "#dc2626",
+              color: "#ffffff",
+            }}
+            aria-label={`Delete task ${task.title}`}
           >
-            Delete
+            Delete task
           </button>
         </div>
       </div>
-    </li>
+    </article>
   );
 }
 

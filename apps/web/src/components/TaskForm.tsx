@@ -1,32 +1,64 @@
 type TaskFormProps = {
   value: string;
   onChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (event: React.FormEvent) => void;
 };
 
 function TaskForm({ value, onChange, onSubmit }: TaskFormProps) {
   return (
-    <div className="mb-6 rounded-2xl bg-white p-6 shadow">
-      <h2 className="mb-4 text-xl font-semibold text-slate-900">
+    <section
+      className="rounded-3xl p-6 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <h2
+        className="text-2xl font-semibold"
+        style={{ color: "var(--text)" }}
+      >
         Create a new task
       </h2>
 
-      <form onSubmit={onSubmit} className="flex gap-3">
+      <p
+        className="mt-2 text-sm"
+        style={{ color: "var(--muted)" }}
+      >
+        Break larger goals into short, manageable micro-tasks.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row">
+        <label htmlFor="new-task" className="sr-only">
+          Enter a new micro-task
+        </label>
+
         <input
+          id="new-task"
           type="text"
-          placeholder="Enter a micro-task..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-400"
+          placeholder="Enter a micro-task..."
+          className="flex-1 rounded-xl px-4 py-3 text-sm outline-none"
+          style={{
+            backgroundColor: "var(--card)",
+            color: "var(--text)",
+            border: "1px solid var(--border)",
+          }}
         />
+
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+          className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          style={{
+            backgroundColor: "#2563eb",
+            color: "#ffffff",
+            border: "1px solid transparent",
+          }}
         >
           Add task
         </button>
       </form>
-    </div>
+    </section>
   );
 }
 

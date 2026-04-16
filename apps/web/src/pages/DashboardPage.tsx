@@ -31,7 +31,7 @@ function DashboardPage() {
   const [savingSession, setSavingSession] = useState(false);
   const [pageError, setPageError] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
-  const { theme, toggleTheme } = useTheme();
+  const { theme, motion, toggleTheme, toggleMotion } = useTheme();
 
   useEffect(() => {
     if (!token) {
@@ -176,7 +176,7 @@ function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={toggleTheme}
               className="rounded-xl px-4 py-2 text-sm font-semibold"
@@ -187,6 +187,18 @@ function DashboardPage() {
               }}
             >
               {theme === "default" ? "High Contrast" : "Normal Mode"}
+            </button>
+
+            <button
+              onClick={toggleMotion}
+              className="rounded-xl px-4 py-2 text-sm font-semibold"
+              style={{
+                backgroundColor: "var(--card)",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {motion === "default" ? "Reduced Motion" : "Standard Motion"}
             </button>
 
             <button

@@ -16,9 +16,7 @@ function RegisterPage() {
 
     try {
       const result = await register(email, password);
-
       saveToken(result.token);
-
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof Error) {
@@ -30,7 +28,10 @@ function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100">
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
+    >
       <div>
         <AuthForm
           mode="register"
@@ -45,7 +46,14 @@ function RegisterPage() {
         />
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-100 px-3 py-2 text-red-700">
+          <p
+            className="mt-4 rounded-lg px-3 py-2"
+            style={{
+              backgroundColor: "rgba(220, 38, 38, 0.12)",
+              color: "var(--text)",
+              border: "1px solid #dc2626",
+            }}
+          >
             {error}
           </p>
         )}

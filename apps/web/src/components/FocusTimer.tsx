@@ -81,27 +81,48 @@ function FocusTimer({
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section
+      className="rounded-3xl p-6 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
       <div className="mb-2">
-        <h2 className="text-2xl font-semibold text-slate-900">Focus Session</h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <h2
+          className="text-2xl font-semibold"
+          style={{ color: "var(--text)" }}
+        >
+          Focus Session
+        </h2>
+        <p
+          className="mt-1 text-sm"
+          style={{ color: "var(--muted)" }}
+        >
           Use a short timed session to focus on one micro-task.
         </p>
       </div>
 
       <div className="mt-6 flex flex-col items-center">
         <div
-          className="mb-6 text-6xl font-bold tracking-tight text-slate-950"
+          className="mb-6 text-6xl font-bold tracking-tight"
+          style={{ color: "var(--text)" }}
           aria-live="polite"
           aria-label={`Time remaining ${formatTime(timeLeft)}`}
         >
           {formatTime(timeLeft)}
         </div>
 
-        <div className="mb-6 h-3 w-full max-w-md overflow-hidden rounded-full bg-slate-200">
+        <div
+          className="mb-6 h-3 w-full max-w-md overflow-hidden rounded-full"
+          style={{ backgroundColor: "var(--border)" }}
+        >
           <div
-            className="h-full rounded-full bg-blue-600 transition-all duration-300"
-            style={{ width: `${progressPercent}%` }}
+            className="h-full rounded-full"
+            style={{
+              width: `${progressPercent}%`,
+              backgroundColor: "#2563eb",
+            }}
             aria-hidden="true"
           />
         </div>
@@ -112,7 +133,11 @@ function FocusTimer({
               type="button"
               onClick={start}
               disabled={isSaving}
-              className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                backgroundColor: "#059669",
+                color: "#ffffff",
+              }}
             >
               {timeLeft === initialSeconds ? "Start" : "Resume"}
             </button>
@@ -120,7 +145,11 @@ function FocusTimer({
             <button
               type="button"
               onClick={pause}
-              className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-600"
+              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                backgroundColor: "#d97706",
+                color: "#ffffff",
+              }}
             >
               Pause
             </button>
@@ -130,13 +159,22 @@ function FocusTimer({
             type="button"
             onClick={reset}
             disabled={isSaving}
-            className="rounded-xl bg-slate-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{
+              backgroundColor: "var(--text)",
+              color: "var(--card)",
+              border: "1px solid var(--border)",
+            }}
           >
             Reset
           </button>
         </div>
 
-        <p className="mt-4 text-sm text-slate-500" aria-live="polite">
+        <p
+          className="mt-4 text-sm"
+          style={{ color: "var(--muted)" }}
+          aria-live="polite"
+        >
           {isSaving
             ? "Saving completed focus session..."
             : running

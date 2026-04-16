@@ -10,26 +10,62 @@ type TaskListProps = {
 
 function TaskList({ tasks, loading, onToggle, onDelete }: TaskListProps) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow">
-      <h2 className="mb-4 text-xl font-semibold text-slate-900">Your tasks</h2>
+    <section
+      className="rounded-3xl p-6 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <h2
+        className="text-2xl font-semibold"
+        style={{ color: "var(--text)" }}
+      >
+        Your tasks
+      </h2>
 
-      {loading ? (
-        <p className="text-slate-600">Loading tasks...</p>
-      ) : tasks.length === 0 ? (
-        <p className="text-slate-600">No tasks yet. Add your first one.</p>
-      ) : (
-        <ul className="space-y-3">
-          {tasks.map((task) => (
+      <p
+        className="mt-2 text-sm"
+        style={{ color: "var(--muted)" }}
+      >
+        Each task shows its status with text as well as visual styling.
+      </p>
+
+      <div className="mt-6 space-y-4">
+        {loading ? (
+          <div
+            className="rounded-2xl px-4 py-4 text-sm"
+            style={{
+              backgroundColor: "var(--card)",
+              color: "var(--muted)",
+              border: "1px dashed var(--border)",
+            }}
+          >
+            Loading tasks...
+          </div>
+        ) : tasks.length === 0 ? (
+          <div
+            className="rounded-2xl px-4 py-4 text-sm"
+            style={{
+              backgroundColor: "var(--card)",
+              color: "var(--muted)",
+              border: "1px dashed var(--border)",
+            }}
+          >
+            No tasks yet. Add your first micro-task.
+          </div>
+        ) : (
+          tasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
               onToggle={onToggle}
               onDelete={onDelete}
             />
-          ))}
-        </ul>
-      )}
-    </div>
+          ))
+        )}
+      </div>
+    </section>
   );
 }
 
