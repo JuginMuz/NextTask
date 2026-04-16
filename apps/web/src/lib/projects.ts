@@ -34,6 +34,25 @@ export function createProject(
   );
 }
 
+export function updateProject(
+  projectId: string,
+  title: string,
+  description: string,
+  token: string
+) {
+  return apiFetch<Project>(
+    `/projects/${projectId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        title,
+        description,
+      }),
+    },
+    token
+  );
+}
+
 export function deleteProject(projectId: string, token: string) {
   return apiFetch<void>(`/projects/${projectId}`, { method: "DELETE" }, token);
 }

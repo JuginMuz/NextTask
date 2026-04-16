@@ -4,6 +4,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import { ThemeProvider } from "./lib/theme";
 import AppLayout from "./components/AppLayout";
+import TaskFocusPage from "./pages/TaskFocusPage";
 
 // NEW pages (create empty for now)
 import ProjectsPage from "./pages/ProjectsPage";
@@ -25,6 +26,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/projects/:projectId/tasks/:taskId" element={<TaskFocusPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Routes>

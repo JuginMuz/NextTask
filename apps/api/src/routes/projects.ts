@@ -71,6 +71,63 @@ projectsRouter.post("/", requireAuth, async (req, res) => {
   }
 });
 
+projectsRouter.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const userId = (req as any).userId;
+    const { id } = req.params;
+    const { title, description } = req.body;
+
+    const existingProject = await prisma.project.findFirst({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        tasks: true,
+      },
+    });
+
+    if (!existingProject) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    if (!title || typeof title !== "string" || !title.trim()) {
+      return res.status(400).json({ error: "Project title is required" });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        description: typeof description === "string" ? description.trim() : null,
+      },
+      include: {
+        tasks: true,
+      },
+    });
+
+    const totalTasks = updatedProject.tasks.length;
+    const completedTasks = updatedProject.tasks.filter((task) => task.completed).length;
+    const progress =
+      totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+    res.json({
+      id: updatedProject.id,
+      title: updatedProject.title,
+      description: updatedProject.description,
+      createdAt: updatedProject.createdAt,
+      updatedAt: updatedProject.updatedAt,
+      userId: updatedProject.userId,
+      totalTasks,
+      completedTasks,
+      progress,
+    });
+  } catch (error) {
+    console.error("Failed to update project:", error);
+    res.status(500).json({ error: "Failed to update project" });
+  }
+});
+
 projectsRouter.delete("/:id", requireAuth, async (req, res) => {
   try {
     const userId = (req as any).userId;
