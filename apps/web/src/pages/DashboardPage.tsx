@@ -17,6 +17,7 @@ import {
   updateTask,
   type Task,
 } from "../lib/tasks";
+import { useTheme } from "../lib/theme";
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function DashboardPage() {
   const [savingSession, setSavingSession] = useState(false);
   const [pageError, setPageError] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!token) {
@@ -146,33 +148,73 @@ function DashboardPage() {
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   return (
-    <main className="min-h-screen bg-slate-100 px-6 py-8">
+    <main className="min-h-screen px-6 py-8"
+      style={{
+        backgroundColor: "var(--bg)",
+        color: "var(--text)",
+      }}>
       <div className="mx-auto max-w-6xl">
-        <header className="mb-6 flex items-center justify-between rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm">
+        <header
+          className="mb-6 flex items-center justify-between rounded-3xl px-6 py-5 shadow-sm"
+          style={{
+            backgroundColor: "var(--card)",
+            border: "1px solid var(--border)",
+          }}
+        >
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-950">
+            <h1
+              className="text-4xl font-bold tracking-tight"
+              style={{ color: "var(--text)" }}
+            >
               NextTask
             </h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p
+              className="mt-1 text-sm"
+              style={{ color: "var(--muted)" }}
+            >
               An accessible workflow for micro-tasks and focus sessions.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className="rounded-xl px-4 py-2 text-sm font-semibold"
+              style={{
+                backgroundColor: "var(--card)",
+                color: "var(--text)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {theme === "default" ? "High Contrast" : "Normal Mode"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-xl px-5 py-3 text-sm font-semibold"
+              style={{
+                backgroundColor: theme === "high-contrast" ? "#ffffff" : "#0f172a",
+                color: theme === "high-contrast" ? "#000000" : "#ffffff",
+                border: "1px solid var(--border)",
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         {(pageError || sessionMessage) && (
           <div className="mb-6 space-y-3">
             {pageError && (
               <div
-                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                className="rounded-2xl px-4 py-3 text-sm"
                 role="alert"
+                style={{
+                  border: "1px solid #dc2626",
+                  backgroundColor: theme === "high-contrast" ? "#1a0000" : "#fef2f2",
+                  color: theme === "high-contrast" ? "#ffffff" : "#b91c1c",
+                }}
               >
                 {pageError}
               </div>
@@ -180,8 +222,13 @@ function DashboardPage() {
 
             {sessionMessage && (
               <div
-                className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+                className="rounded-2xl px-4 py-3 text-sm"
                 aria-live="polite"
+                style={{
+                  border: "1px solid #10b981",
+                  backgroundColor: theme === "high-contrast" ? "#001a12" : "#ecfdf5",
+                  color: theme === "high-contrast" ? "#ffffff" : "#047857",
+                }}
               >
                 {sessionMessage}
               </div>
@@ -216,25 +263,46 @@ function DashboardPage() {
           <div className="space-y-4">
             <FocusTimer onComplete={handleSessionComplete} />
 
-            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-semibold text-slate-900">
+            <section
+              className="rounded-3xl p-6 shadow-sm"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <h2
+                className="text-2xl font-semibold"
+                style={{ color: "var(--text)" }}
+              >
                 Session summary
               </h2>
-              <div className="mt-4 space-y-3 text-sm text-slate-700">
+              <div
+                className="mt-4 space-y-3 text-sm"
+                style={{ color: "var(--muted)" }}
+              >
                 <p>
-                  <span className="font-semibold text-slate-900">
+                  <span
+                    className="font-semibold"
+                    style={{ color: "var(--text)" }}
+                  >
                     Sessions completed:
                   </span>{" "}
                   {totalSessions}
                 </p>
                 <p>
-                  <span className="font-semibold text-slate-900">
+                  <span
+                    className="font-semibold"
+                    style={{ color: "var(--text)" }}
+                  >
                     Total focus time:
                   </span>{" "}
                   {totalFocusMinutes} minutes
                 </p>
                 <p>
-                  <span className="font-semibold text-slate-900">
+                  <span
+                    className="font-semibold"
+                    style={{ color: "var(--text)" }}
+                  >
                     Saving status:
                   </span>{" "}
                   {savingSession ? "Saving..." : "Up to date"}
@@ -255,9 +323,23 @@ type StatCardProps = {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-medium text-slate-600">{label}</p>
-      <p className="mt-3 text-4xl font-bold tracking-tight text-slate-950">
+    <article
+      className="rounded-3xl p-5 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <p
+        className="text-sm font-medium"
+        style={{ color: "var(--muted)" }}
+      >
+        {label}
+      </p>
+      <p
+        className="mt-3 text-4xl font-bold tracking-tight"
+        style={{ color: "var(--text)" }}
+      >
         {value}
       </p>
     </article>

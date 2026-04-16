@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* DEFAULT THEME */
+:root {
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+}
+
+/* HIGH CONTRAST THEME */
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --card: #111111;
+  --text: #ffffff;
+  --muted: #e5e7eb;
+  --border: #ffffff;
+}
