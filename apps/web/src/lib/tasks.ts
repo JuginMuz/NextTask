@@ -6,40 +6,51 @@ export type Task = {
   completed: boolean;
   createdAt: string;
   userId: string;
+  projectId: string | null;
 };
 
-export function getTasks(token: string) {
-  return apiFetch<Task[]>("/tasks", { method: "GET" }, token);
+export function getTasks(token: string, projectId?: string) {
+  const query = projectId ? `?projectId=${encodeURIComponent(projectId)}` : "";
+  return apiFetch<Task[]>(`/tasks${query}`, { method: "GET" }, token);
 }
 
-export function createTask(title: string, token: string) {
+export function createTask(
+  title: string,
+  token: string,
+  projectId?: string
+) {
   return apiFetch<Task>(
     "/tasks",
     {
       method: "POST",
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({
+        title,
+        projectId: projectId ?? null,
+      }),
     },
     token
   );
 }
 
-export function updateTask(taskId: string, completed: boolean, token: string) {
+export function updateTask(
+  taskId: string,
+  completed: boolean,
+  token: string,
+  title?: string
+) {
   return apiFetch<Task>(
     `/tasks/${taskId}`,
     {
-      method: "PATCH",
-      body: JSON.stringify({ completed }),
+      method: "PUT",
+      body: JSON.stringify({
+        completed,
+        ...(typeof title === "string" ? { title } : {}),
+      }),
     },
     token
   );
 }
 
 export function deleteTask(taskId: string, token: string) {
-  return apiFetch<{ message: string }>(
-    `/tasks/${taskId}`,
-    {
-      method: "DELETE",
-    },
-    token
-  );
+  return apiFetch<void>(`/tasks/${taskId}`, { method: "DELETE" }, token);
 }

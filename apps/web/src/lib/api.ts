@@ -5,24 +5,32 @@ export async function apiFetch<T>(
   options: RequestInit = {},
   token?: string
 ): Promise<T> {
-  const headers = new Headers(options.headers || {});
-
-  headers.set("Content-Type", "application/json");
-
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw new Error(data.error || "Something went wrong");
+    let errorMessage = "Request failed";
+
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorMessage;
+    } catch {
+      // no JSON body, keep fallback message
+    }
+
+    throw new Error(errorMessage);
   }
 
-  return data;
+  // Important fix for DELETE / 204 No Content
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json();
 }

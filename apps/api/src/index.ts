@@ -5,6 +5,7 @@ import { prisma } from "./lib/prisma";
 import { authRouter } from "./routes/auth";
 import { tasksRouter } from "./routes/tasks";
 import { sessionsRouter } from "./routes/sessions";
+import { projectsRouter } from "./routes/projects";
 
 
 dotenv.config();
@@ -22,6 +23,8 @@ app.use("/auth", authRouter);
 app.use("/tasks", tasksRouter);
 
 app.use("/sessions", sessionsRouter);
+
+app.use("/projects", projectsRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
