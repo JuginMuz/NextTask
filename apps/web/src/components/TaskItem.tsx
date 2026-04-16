@@ -21,7 +21,7 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
           <h3
-            className={`text-lg font-semibold break-words ${
+            className={`break-words text-lg font-semibold ${
               task.completed ? "line-through opacity-80" : ""
             }`}
             style={{ color: "var(--text)" }}
@@ -34,8 +34,8 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
               className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
               style={{
                 backgroundColor: task.completed
-                  ? "rgba(16, 185, 129, 0.18)"
-                  : "rgba(59, 130, 246, 0.18)",
+                  ? "var(--success-soft)"
+                  : "var(--pending-soft)",
                 color: "var(--text)",
                 border: "1px solid var(--border)",
               }}
@@ -45,10 +45,7 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
               {statusLabel}
             </span>
 
-            <span
-              className="text-sm"
-              style={{ color: "var(--muted)" }}
-            >
+            <span className="text-sm" style={{ color: "var(--muted)" }}>
               {task.completed
                 ? "This micro-task has been finished."
                 : "This micro-task still needs to be done."}
@@ -62,15 +59,22 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
             onClick={() => onToggle(task.id, !task.completed)}
             className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{
-              backgroundColor: task.completed ? "#0f766e" : "#2563eb",
-              color: "#ffffff",
+              backgroundColor: task.completed
+                ? "var(--warning)"
+                : "var(--primary)",
+              color: task.completed
+                ? "var(--warning-text)"
+                : "var(--primary-text)",
             }}
             aria-label={
               task.completed
-                ? `Mark "${task.title}" as not completed`
+                ? `Mark "${task.title}" as pending`
                 : `Mark "${task.title}" as completed`
             }
           >
+            <span aria-hidden="true" className="mr-2">
+              {task.completed ? "↺" : "✓"}
+            </span>
             {task.completed ? "Mark as pending" : "Mark as completed"}
           </button>
 
@@ -79,11 +83,15 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
             onClick={() => onDelete(task.id)}
             className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{
-              backgroundColor: "#dc2626",
-              color: "#ffffff",
+              backgroundColor: "var(--secondary)",
+              color: "var(--secondary-text)",
+              border: "1px solid var(--border)",
             }}
             aria-label={`Delete task ${task.title}`}
           >
+            <span aria-hidden="true" className="mr-2">
+              ✕
+            </span>
             Delete task
           </button>
         </div>

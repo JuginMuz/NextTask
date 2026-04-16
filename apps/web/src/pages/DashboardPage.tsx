@@ -223,9 +223,9 @@ function DashboardPage() {
                 className="rounded-2xl px-4 py-3 text-sm"
                 role="alert"
                 style={{
-                  border: "1px solid #dc2626",
-                  backgroundColor: theme === "high-contrast" ? "#1a0000" : "#fef2f2",
-                  color: theme === "high-contrast" ? "#ffffff" : "#b91c1c",
+                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--danger-soft)",
+                  color: "var(--text)",
                 }}
               >
                 {pageError}
@@ -237,9 +237,9 @@ function DashboardPage() {
                 className="rounded-2xl px-4 py-3 text-sm"
                 aria-live="polite"
                 style={{
-                  border: "1px solid #10b981",
-                  backgroundColor: theme === "high-contrast" ? "#001a12" : "#ecfdf5",
-                  color: theme === "high-contrast" ? "#ffffff" : "#047857",
+                  border: "1px solid var(--border)",
+                  backgroundColor: "var(--success-soft)",
+                  color: "var(--text)",
                 }}
               >
                 {sessionMessage}

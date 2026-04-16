@@ -117,8 +117,8 @@ function AuthForm({
           type="submit"
           className="w-full rounded-lg py-2 font-semibold"
           style={{
-            backgroundColor: "#2563eb",
-            color: "#ffffff",
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-text)",
             border: "1px solid transparent",
           }}
         >

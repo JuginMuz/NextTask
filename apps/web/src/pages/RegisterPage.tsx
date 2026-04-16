@@ -49,9 +49,9 @@ function RegisterPage() {
           <p
             className="mt-4 rounded-lg px-3 py-2"
             style={{
-              backgroundColor: "rgba(220, 38, 38, 0.12)",
+              backgroundColor: "var(--danger-soft)",
               color: "var(--text)",
-              border: "1px solid #dc2626",
+              border: "1px solid var(--border)",
             }}
           >
             {error}

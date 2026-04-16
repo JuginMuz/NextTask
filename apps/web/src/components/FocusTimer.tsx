@@ -135,9 +135,9 @@ function FocusTimer({
               disabled={isSaving}
               className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{
-                backgroundColor: "#059669",
-                color: "#ffffff",
-              }}
+                backgroundColor: "var(--primary)",
+                color: "var(--primary-text)",
+                }}
             >
               {timeLeft === initialSeconds ? "Start" : "Resume"}
             </button>
@@ -147,9 +147,9 @@ function FocusTimer({
               onClick={pause}
               className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{
-                backgroundColor: "#d97706",
-                color: "#ffffff",
-              }}
+                backgroundColor: "var(--warning)",
+                color: "var(--warning-text)",
+                }}
             >
               Pause
             </button>
@@ -161,8 +161,8 @@ function FocusTimer({
             disabled={isSaving}
             className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{
-              backgroundColor: "var(--text)",
-              color: "var(--card)",
+              backgroundColor: "var(--secondary)",
+              color: "var(--secondary-text)",
               border: "1px solid var(--border)",
             }}
           >
