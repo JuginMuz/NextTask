@@ -65,3 +65,29 @@ html[data-motion="reduced"] *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+:root {
+  --focus-ring: #2563eb;
+  --focus-ring-offset: #ffffff;
+}
+
+[data-theme="high-contrast"] {
+  --focus-ring: #facc15;
+  --focus-ring-offset: #000000;
+}
+
+/* Strong, visible keyboard focus */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--focus-ring-offset);
+}
+
+/* Keep disabled controls clearly inactive */
+button:disabled,
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

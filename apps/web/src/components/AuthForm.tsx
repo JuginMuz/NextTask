@@ -24,6 +24,7 @@ function AuthForm({
         backgroundColor: "var(--card)",
         border: "1px solid var(--border)",
         color: "var(--text)",
+        boxShadow: "0 4px 18px rgba(0, 0, 0, 0.08)",
       }}
     >
       <h1
@@ -44,7 +45,7 @@ function AuthForm({
         <button
           type="button"
           onClick={() => onModeChange("login")}
-          className="flex-1 rounded-lg px-4 py-2 font-medium"
+          className="flex-1 rounded-lg px-4 py-2 font-medium outline-none"
           style={{
             backgroundColor:
               mode === "login" ? "var(--text)" : "var(--border)",
@@ -58,7 +59,7 @@ function AuthForm({
         <button
           type="button"
           onClick={() => onModeChange("register")}
-          className="flex-1 rounded-lg px-4 py-2 font-medium"
+          className="flex-1 rounded-lg px-4 py-2 font-medium outline-none"
           style={{
             backgroundColor:
               mode === "register" ? "var(--text)" : "var(--border)",
@@ -80,7 +81,7 @@ function AuthForm({
           </label>
           <input
             type="email"
-            className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2"
+            className="w-full rounded-lg px-3 py-2 outline-none"
             style={{
               backgroundColor: "var(--card)",
               color: "var(--text)",
@@ -101,7 +102,7 @@ function AuthForm({
           </label>
           <input
             type="password"
-            className="w-full rounded-lg px-3 py-2 outline-none focus:ring-2"
+            className="w-full rounded-lg px-3 py-2 outline-none"
             style={{
               backgroundColor: "var(--card)",
               color: "var(--text)",
@@ -115,7 +116,7 @@ function AuthForm({
 
         <button
           type="submit"
-          className="w-full rounded-lg py-2 font-semibold"
+          className="w-full rounded-lg py-2 font-semibold outline-none"
           style={{
             backgroundColor: "var(--primary)",
             color: "var(--primary-text)",

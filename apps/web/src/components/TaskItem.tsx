@@ -57,7 +57,12 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
           <button
             type="button"
             onClick={() => onToggle(task.id, !task.completed)}
-            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            title={
+              task.completed
+                ? "Mark task as pending"
+                : "Mark task as completed"
+            }
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
             style={{
               backgroundColor: task.completed
                 ? "var(--warning)"
@@ -81,7 +86,8 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
           <button
             type="button"
             onClick={() => onDelete(task.id)}
-            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            title="Delete task"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
             style={{
               backgroundColor: "var(--secondary)",
               color: "var(--secondary-text)",

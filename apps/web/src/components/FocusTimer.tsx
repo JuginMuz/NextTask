@@ -121,7 +121,7 @@ function FocusTimer({
             className="h-full rounded-full"
             style={{
               width: `${progressPercent}%`,
-              backgroundColor: "#2563eb",
+              backgroundColor: "var(--primary)",
             }}
             aria-hidden="true"
           />
@@ -130,25 +130,27 @@ function FocusTimer({
         <div className="flex flex-wrap items-center justify-center gap-3">
           {!running ? (
             <button
-              type="button"
-              onClick={start}
-              disabled={isSaving}
-              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              style={{
-                backgroundColor: "var(--primary)",
-                color: "var(--primary-text)",
+                type="button"
+                onClick={start}
+                disabled={isSaving}
+                aria-label={timeLeft === initialSeconds ? "Start focus session" : "Resume focus session"}
+                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                style={{
+                    backgroundColor: "var(--primary)",
+                    color: "var(--primary-text)",
                 }}
-            >
+                >
               {timeLeft === initialSeconds ? "Start" : "Resume"}
             </button>
           ) : (
             <button
               type="button"
-              onClick={pause}
-              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              style={{
-                backgroundColor: "var(--warning)",
-                color: "var(--warning-text)",
+                onClick={pause}
+                aria-label="Pause focus session"
+                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                style={{
+                    backgroundColor: "var(--warning)",
+                    color: "var(--warning-text)",
                 }}
             >
               Pause
@@ -159,11 +161,12 @@ function FocusTimer({
             type="button"
             onClick={reset}
             disabled={isSaving}
-            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            aria-label="Reset focus session"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
             style={{
-              backgroundColor: "var(--secondary)",
-              color: "var(--secondary-text)",
-              border: "1px solid var(--border)",
+                backgroundColor: "var(--secondary)",
+                color: "var(--secondary-text)",
+                border: "1px solid var(--border)",
             }}
           >
             Reset

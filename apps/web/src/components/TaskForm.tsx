@@ -37,7 +37,7 @@ function TaskForm({ value, onChange, onSubmit }: TaskFormProps) {
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Enter a micro-task..."
+          placeholder='Try "Read 2 pages" or "Reply to one email"'
           className="flex-1 rounded-xl px-4 py-3 text-sm outline-none"
           style={{
             backgroundColor: "var(--card)",
@@ -48,10 +48,11 @@ function TaskForm({ value, onChange, onSubmit }: TaskFormProps) {
 
         <button
           type="submit"
-          className="rounded-xl px-4 py-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          aria-label="Add new task"
+          className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
           style={{
-            backgroundColor: "#2563eb",
-            color: "#ffffff",
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-text)",
             border: "1px solid transparent",
           }}
         >

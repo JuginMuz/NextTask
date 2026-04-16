@@ -319,6 +319,22 @@ function DashboardPage() {
                   </span>{" "}
                   {savingSession ? "Saving..." : "Up to date"}
                 </p>
+
+                {totalSessions === 0 && (
+                  <div
+                    className="mt-4 rounded-2xl px-4 py-4"
+                    style={{
+                      backgroundColor: "var(--card)",
+                      border: "1px dashed var(--border)",
+                      color: "var(--text)",
+                    }}
+                  >
+                    <p className="font-semibold">No focus sessions yet</p>
+                    <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                      Start a short focus session to build momentum and track your progress.
+                    </p>
+                  </div>
+                )}
               </div>
             </section>
           </div>
@@ -334,6 +350,8 @@ type StatCardProps = {
 };
 
 function StatCard({ label, value }: StatCardProps) {
+  const isZero = value === 0 || value === "0%";
+
   return (
     <article
       className="rounded-3xl p-5 shadow-sm"
@@ -353,6 +371,12 @@ function StatCard({ label, value }: StatCardProps) {
         style={{ color: "var(--text)" }}
       >
         {value}
+      </p>
+      <p
+        className="mt-2 text-xs"
+        style={{ color: isZero ? "var(--muted)" : "var(--text)" }}
+      >
+        {isZero ? "No activity yet" : "Looking good"}
       </p>
     </article>
   );
