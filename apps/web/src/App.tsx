@@ -6,10 +6,11 @@ import { ThemeProvider } from "./lib/theme";
 import AppLayout from "./components/AppLayout";
 import TaskFocusPage from "./pages/TaskFocusPage";
 
-// NEW pages (create empty for now)
 import ProjectsPage from "./pages/ProjectsPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
+
+
 
 function App() {
   return (

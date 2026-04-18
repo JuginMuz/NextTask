@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearToken } from "../lib/session";
 import { useTheme } from "../lib/theme";
@@ -5,6 +6,45 @@ import { useTheme } from "../lib/theme";
 function ProfilePage() {
   const navigate = useNavigate();
   const { theme, motion, toggleTheme, toggleMotion } = useTheme();
+
+  const [focusMinutes, setFocusMinutes] = useState<number>(25);
+  const [savedMessage, setSavedMessage] = useState("");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("focus-default-minutes");
+      if (saved) {
+        const parsed = Number(saved);
+        if (!Number.isNaN(parsed) && parsed >= 5 && parsed <= 60) {
+          setFocusMinutes(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load focus preference:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("focus-default-minutes", String(focusMinutes));
+    } catch (error) {
+      console.error("Failed to save focus preference:", error);
+    }
+  }, [focusMinutes]);
+
+  useEffect(() => {
+    if (!savedMessage) return;
+
+    const timeout = window.setTimeout(() => {
+      setSavedMessage("");
+    }, 1800);
+
+    return () => window.clearTimeout(timeout);
+  }, [savedMessage]);
+
+  function showSaved(message: string) {
+    setSavedMessage(message);
+  }
 
   function handleLogout() {
     clearToken();
@@ -18,6 +58,23 @@ function ProfilePage() {
 
   function handleDeleteAccount() {
     alert("Delete account can be connected to the backend next.");
+  }
+
+  function handleToggleTheme() {
+    toggleTheme();
+    showSaved(theme === "default" ? "High contrast enabled" : "Theme set to standard");
+  }
+
+  function handleToggleMotion() {
+    toggleMotion();
+    showSaved(
+      motion === "default" ? "Reduced motion enabled" : "Motion set to standard"
+    );
+  }
+
+  function setFocusPreset(minutes: number) {
+    setFocusMinutes(minutes);
+    showSaved(`Default focus timer set to ${minutes} minutes`);
   }
 
   return (
@@ -45,9 +102,23 @@ function ProfilePage() {
           <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
             Manage your settings, accessibility preferences, and account options.
           </p>
+
+          {savedMessage && (
+            <div
+              className="mt-4 inline-flex rounded-xl px-4 py-2 text-sm font-medium"
+              aria-live="polite"
+              style={{
+                backgroundColor: "var(--success-soft)",
+                color: "var(--success)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {savedMessage}
+            </div>
+          )}
         </header>
 
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1fr]">
+        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <section
             className="rounded-3xl p-6 shadow-sm"
             style={{
@@ -70,24 +141,79 @@ function ProfilePage() {
                   border: "1px solid var(--border)",
                 }}
               >
-                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-                  Theme mode
-                </p>
-                <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                  Current: {theme === "default" ? "Normal mode" : "High contrast"}
-                </p>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                      Theme
+                    </p>
+                    <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      High contrast: {theme === "high-contrast" ? "On" : "Off"}
+                    </p>
+                    <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      Switch between standard and high-contrast display.
+                    </p>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="mt-4 rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                  style={{
-                    backgroundColor: "var(--primary)",
-                    color: "var(--primary-text)",
-                  }}
-                >
-                  {theme === "default" ? "Enable High Contrast" : "Use Normal Mode"}
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleToggleTheme}
+                    className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                    style={{
+                      backgroundColor:
+                        theme === "high-contrast" ? "var(--success-soft)" : "var(--primary)",
+                      color:
+                        theme === "high-contrast" ? "var(--success)" : "var(--primary-text)",
+                      border: theme === "high-contrast" ? "1px solid var(--border)" : "none",
+                      minWidth: "9rem",
+                    }}
+                    aria-pressed={theme === "high-contrast"}
+                  >
+                    {theme === "high-contrast" ? "On" : "Off"}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className="rounded-2xl px-4 py-4"
+                style={{
+                  backgroundColor: "var(--card)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                      Motion
+                    </p>
+                    <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      Reduced motion: {motion === "reduced" ? "On" : "Off"}
+                    </p>
+                    <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      Reduce motion for a calmer and less distracting experience.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleToggleMotion}
+                    className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                    style={{
+                      backgroundColor:
+                        motion === "reduced"
+                          ? "var(--success-soft)"
+                          : "var(--secondary)",
+                      color:
+                        motion === "reduced"
+                          ? "var(--success)"
+                          : "var(--secondary-text)",
+                      border: "1px solid var(--border)",
+                      minWidth: "9rem",
+                    }}
+                    aria-pressed={motion === "reduced"}
+                  >
+                    {motion === "reduced" ? "On" : "Off"}
+                  </button>
+                </div>
               </div>
 
               <div
@@ -98,51 +224,47 @@ function ProfilePage() {
                 }}
               >
                 <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-                  Motion preference
+                  Default focus timer
                 </p>
                 <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                  Current: {motion === "default" ? "Standard motion" : "Reduced motion"}
+                  Used as the default timer on the focus page.
+                </p>
+                <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                  Choose your preferred starting session length.
                 </p>
 
-                <button
-                  type="button"
-                  onClick={toggleMotion}
-                  className="mt-4 rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                  style={{
-                    backgroundColor: "var(--secondary)",
-                    color: "var(--secondary-text)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  {motion === "default" ? "Enable Reduced Motion" : "Use Standard Motion"}
-                </button>
-              </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {[15, 25, 45].map((minutes) => {
+                    const isActive = focusMinutes === minutes;
+                    return (
+                      <button
+                        key={minutes}
+                        type="button"
+                        onClick={() => setFocusPreset(minutes)}
+                        className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                        style={{
+                          backgroundColor: isActive ? "var(--primary)" : "var(--card)",
+                          color: isActive ? "var(--primary-text)" : "var(--text)",
+                          border: "1px solid var(--border)",
+                        }}
+                        aria-pressed={isActive}
+                      >
+                        {minutes} min
+                      </button>
+                    );
+                  })}
+                </div>
 
-              <div
-                className="rounded-2xl px-4 py-4"
-                style={{
-                  backgroundColor: "var(--card)",
-                  border: "1px dashed var(--border)",
-                }}
-              >
-                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-                  Accessibility summary
+                <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
+                  Current default:{" "}
+                  <strong style={{ color: "var(--text)" }}>{focusMinutes} minutes</strong>
                 </p>
-                <ul
-                  className="mt-3 space-y-2 text-sm"
-                  style={{ color: "var(--muted)" }}
-                >
-                  <li>• High contrast mode available</li>
-                  <li>• Reduced motion mode available</li>
-                  <li>• Colour-blind-safe task/status design applied</li>
-                  <li>• Keyboard focus visibility improved</li>
-                </ul>
               </div>
             </div>
           </section>
 
           <section
-            className="rounded-3xl p-6 shadow-sm"
+            className="rounded-3xl p-5 shadow-sm"
             style={{
               backgroundColor: "var(--card)",
               border: "1px solid var(--border)",
@@ -155,7 +277,7 @@ function ProfilePage() {
               Security
             </h2>
 
-            <form onSubmit={handlePasswordSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handlePasswordSubmit} className="mt-5 space-y-3">
               <div>
                 <label
                   htmlFor="current-password"
@@ -218,7 +340,7 @@ function ProfilePage() {
 
               <button
                 type="submit"
-                className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
+                className="pt-2 rounded-xl px-5 py-3 text-sm font-semibold outline-none"
                 style={{
                   backgroundColor: "var(--primary)",
                   color: "var(--primary-text)",
@@ -231,7 +353,7 @@ function ProfilePage() {
         </section>
 
         <section
-          className="rounded-3xl p-6 shadow-sm"
+          className="rounded-3xl p-5 shadow-sm"
           style={{
             backgroundColor: "var(--card)",
             border: "1px solid var(--border)",
@@ -244,14 +366,14 @@ function ProfilePage() {
             Account actions
           </h2>
 
-          <div className="mt-5 flex flex-wrap gap-4">
+          <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={handleLogout}
               className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
               style={{
-                backgroundColor: "var(--secondary)",
-                color: "var(--secondary-text)",
+                backgroundColor: "var(--card)",
+                color: "var(--secondary)",
                 border: "1px solid var(--border)",
               }}
             >
@@ -263,17 +385,17 @@ function ProfilePage() {
               onClick={handleDeleteAccount}
               className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
               style={{
-                backgroundColor: "var(--danger)",
-                color: "var(--danger-text)",
+                backgroundColor: "var(--danger-soft)",
+                color: "var(--danger)",
+                border: "1px solid var(--danger)",
               }}
             >
               Delete account
             </button>
           </div>
 
-          <p className="mt-4 text-sm" style={{ color: "var(--muted)" }}>
-            Account deletion and password updates can be connected to backend
-            routes next.
+          <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
+            Account deletion and password updates can be connected to backend routes next.
           </p>
         </section>
       </div>

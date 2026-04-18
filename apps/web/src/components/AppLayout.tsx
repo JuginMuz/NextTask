@@ -17,50 +17,72 @@ function AppLayout() {
         color: "var(--text)",
       }}
     >
-      {/* NAVBAR */}
       <header
-        className="flex items-center justify-between px-6 py-4 shadow-sm"
+        className="px-6 py-4 shadow-sm"
         style={{
           backgroundColor: "var(--card)",
           borderBottom: "1px solid var(--border)",
         }}
       >
-        <h1 className="text-xl font-bold">NextTask</h1>
-
-        <nav className="flex gap-6 text-sm font-semibold">
-          <Link
-            to="/dashboard"
-            className={isActive("/dashboard") ? "underline" : ""}
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <h1
+            className="text-xl font-bold"
+            style={{ color: "var(--primary)" }}
           >
-            Dashboard
-          </Link>
+            NextTask
+          </h1>
 
-          <Link
-            to="/projects"
-            className={isActive("/projects") ? "underline" : ""}
-          >
-            Projects
-          </Link>
+          <nav className="flex items-center gap-2 text-sm font-semibold">
+            <Link
+              to="/dashboard"
+              className="rounded-full px-3 py-2 no-underline transition"
+              style={{
+                color: isActive("/dashboard") ? "var(--primary)" : "var(--text)",
+                backgroundColor: isActive("/dashboard")
+                  ? "var(--pending-soft)"
+                  : "transparent",
+              }}
+            >
+              Dashboard
+            </Link>
 
-          <Link
-            to="/profile"
-            className={isActive("/profile") ? "underline" : ""}
-          >
-            Profile
-          </Link>
-        </nav>
+            <Link
+              to="/projects"
+              className="rounded-full px-3 py-2 no-underline transition"
+              style={{
+                color: isActive("/projects") ? "var(--primary)" : "var(--text)",
+                backgroundColor: isActive("/projects")
+                  ? "var(--pending-soft)"
+                  : "transparent",
+              }}
+            >
+              Projects
+            </Link>
+
+            <Link
+              to="/profile"
+              className="rounded-full px-3 py-2 no-underline transition"
+              style={{
+                color: isActive("/profile") ? "var(--primary)" : "var(--text)",
+                backgroundColor: isActive("/profile")
+                  ? "var(--pending-soft)"
+                  : "transparent",
+              }}
+            >
+              Profile
+            </Link>
+          </nav>
+        </div>
       </header>
 
-      {/* PAGE CONTENT */}
       <main className="flex-1 px-6 py-8">
         <div className="mx-auto max-w-6xl">
           <Outlet />
         </div>
       </main>
 
-      {/* FOOTER */}
       <footer
-        className="text-center text-xs py-3"
+        className="py-3 text-center text-xs"
         style={{ color: "var(--muted)" }}
       >
         Privacy · Terms

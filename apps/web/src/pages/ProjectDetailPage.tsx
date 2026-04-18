@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import TaskForm from "../components/TaskForm";
+import StatusBadge from "../components/StatusBadge";
 import { getProjects, type Project } from "../lib/projects";
-import { clearToken, getToken } from "../lib/session";
+import { getToken } from "../lib/session";
 import {
   createTask,
   deleteTask,
@@ -73,7 +73,10 @@ function ProjectDetailPage() {
     if (!token || !id) return;
 
     const trimmedTitle = newTaskTitle.trim();
-    if (!trimmedTitle) return;
+    if (!trimmedTitle) {
+      setPageError("Task title cannot be empty.");
+      return;
+    }
 
     try {
       const createdTask = await createTask(trimmedTitle, token, id);
@@ -151,11 +154,6 @@ function ProjectDetailPage() {
     }
   }
 
-  function handleLogout() {
-    clearToken();
-    navigate("/login");
-  }
-
   const completedTasks = useMemo(
     () => tasks.filter((task) => task.completed).length,
     [tasks]
@@ -164,6 +162,28 @@ function ProjectDetailPage() {
   const totalTasks = tasks.length;
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+  const nextTask = useMemo(
+    () => tasks.find((task) => !task.completed) ?? null,
+    [tasks]
+  );
+
+  const orderedTasks = useMemo(() => {
+    return [...tasks].sort((a, b) => {
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1;
+      }
+      return a.createdAt.localeCompare(b.createdAt);
+    });
+  }, [tasks]);
+
+  const nextMilestone = useMemo(() => {
+    if (progress < 25) return 25;
+    if (progress < 50) return 50;
+    if (progress < 75) return 75;
+    if (progress < 100) return 100;
+    return null;
+  }, [progress]);
 
   return (
     <main
@@ -175,51 +195,31 @@ function ProjectDetailPage() {
     >
       <div className="mx-auto max-w-6xl space-y-6">
         <header
-          className="rounded-3xl px-6 py-5 shadow-sm"
+          className="rounded-[28px] px-6 py-6 shadow-sm"
           style={{
             backgroundColor: "var(--card)",
             border: "1px solid var(--border)",
           }}
         >
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/projects"
-                  className="text-sm font-medium no-underline"
-                  style={{ color: "var(--muted)" }}
-                >
-                  ← Back to projects
-                </Link>
-              </div>
-
-              <h1
-                className="mt-3 text-4xl font-bold tracking-tight"
-                style={{ color: "var(--text)" }}
-              >
-                {project ? project.title : "Project"}
-              </h1>
-
-              <p
-                className="mt-2 text-sm"
-                style={{ color: "var(--muted)" }}
-              >
-                {project?.description || "No description yet."}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
-              style={{
-                backgroundColor: "var(--secondary)",
-                color: "var(--secondary-text)",
-                border: "1px solid var(--border)",
-              }}
+          <div className="max-w-3xl">
+            <Link
+              to="/projects"
+              className="text-sm font-medium no-underline"
+              style={{ color: "var(--muted)" }}
             >
-              Logout
-            </button>
+              ← Back to projects
+            </Link>
+
+            <h1
+              className="mt-3 text-4xl font-bold tracking-tight"
+              style={{ color: "var(--text)" }}
+            >
+              {project ? project.title : "Project"}
+            </h1>
+
+            <p className="mt-3 text-sm leading-6" style={{ color: "var(--muted)" }}>
+              {project?.description || "No description yet."}
+            </p>
           </div>
         </header>
 
@@ -239,7 +239,7 @@ function ProjectDetailPage() {
 
         {loading ? (
           <section
-            className="rounded-3xl px-5 py-6 shadow-sm"
+            className="rounded-[28px] px-5 py-6 shadow-sm"
             style={{
               backgroundColor: "var(--card)",
               border: "1px solid var(--border)",
@@ -250,7 +250,7 @@ function ProjectDetailPage() {
           </section>
         ) : !project ? (
           <section
-            className="rounded-3xl px-5 py-6 shadow-sm"
+            className="rounded-[28px] px-5 py-6 shadow-sm"
             style={{
               backgroundColor: "var(--card)",
               border: "1px solid var(--border)",
@@ -271,7 +271,7 @@ function ProjectDetailPage() {
             </section>
 
             <section
-              className="rounded-3xl p-6 shadow-sm"
+              className="rounded-[28px] p-6 shadow-sm"
               style={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
@@ -285,78 +285,170 @@ function ProjectDetailPage() {
               </h2>
 
               <div
-                className="mt-5 h-4 w-full overflow-hidden rounded-full"
+                className="mt-5 h-3 w-full overflow-hidden rounded-full"
                 style={{ backgroundColor: "var(--border)" }}
               >
                 <div
                   className="h-full rounded-full"
                   style={{
                     width: `${progress}%`,
-                    backgroundColor: "var(--primary)",
+                    backgroundColor:
+                      progress === 100 ? "var(--success)" : "var(--primary)",
                   }}
                 />
               </div>
 
-              <p
-                className="mt-3 text-sm"
-                style={{ color: "var(--muted)" }}
-              >
+              <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
                 {completedTasks} of {totalTasks} task
                 {totalTasks === 1 ? "" : "s"} completed
               </p>
+
+              {progress === 0 && (
+                <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                  Get started by completing your first task.
+                </p>
+              )}
             </section>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1fr]">
-              <TaskForm
-                value={newTaskTitle}
-                onChange={setNewTaskTitle}
-                onSubmit={handleCreateTask}
-              />
+            <section
+              className="rounded-[28px] p-6 shadow-sm"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p
+                      className="text-sm font-semibold uppercase tracking-wide"
+                      style={{ color: "var(--muted)" }}
+                    >
+                      Next action
+                    </p>
 
-              <section
-                className="rounded-3xl p-6 shadow-sm"
-                style={{
-                  backgroundColor: "var(--card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <h2
-                  className="text-2xl font-semibold"
-                  style={{ color: "var(--text)" }}
-                >
-                  Focus guidance
-                </h2>
+                    <StatusBadge status={progress === 100 ? "completed" : "pending"} />
+                  </div>
 
-                <p
-                  className="mt-2 text-sm"
-                  style={{ color: "var(--muted)" }}
-                >
-                  Open a task in focus mode to work on it with the timer and see
-                  project progress.
-                </p>
-
-                <div
-                  className="mt-5 rounded-2xl px-4 py-4"
-                  style={{
-                    backgroundColor: "var(--card)",
-                    border: "1px dashed var(--border)",
-                    color: "var(--text)",
-                  }}
-                >
-                  <p className="font-semibold">Suggested next action</p>
-                  <p
-                    className="mt-2 text-sm"
-                    style={{ color: "var(--muted)" }}
+                  <h2
+                    className="mt-3 text-3xl font-bold tracking-tight"
+                    style={{ color: "var(--text)" }}
                   >
-                    Pick one unfinished task and open it in focus mode before
-                    starting a new one.
+                    {nextTask ? `Start “${nextTask.title}”` : "Project completed"}
+                  </h2>
+
+                  <p className="mt-3 text-sm leading-6" style={{ color: "var(--muted)" }}>
+                    {nextTask
+                      ? nextMilestone
+                        ? `Complete this task to move this project closer to ${nextMilestone}% progress.`
+                        : "Focus on one unfinished task before starting anything new."
+                      : "You finished all tasks in this project. You can review it or add another task."}
                   </p>
                 </div>
-              </section>
-            </div>
+
+                <div
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  {nextTask ? (
+                    <Link
+                      to={`/projects/${id}/tasks/${nextTask.id}`}
+                      className="inline-block rounded-xl px-4 py-3 text-sm font-semibold no-underline"
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--primary-text)",
+                      }}
+                    >
+                      Open focus
+                    </Link>
+                  ) : (
+                    <span
+                      className="inline-block rounded-xl px-4 py-3 text-sm font-semibold"
+                      style={{
+                        backgroundColor: "var(--success-soft)",
+                        color: "var(--success)",
+                      }}
+                    >
+                      All tasks completed
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div
+                className="mt-5 rounded-2xl px-4 py-4"
+                style={{
+                  backgroundColor: "var(--card)",
+                  border: "1px dashed var(--border)",
+                }}
+              >
+                <p className="font-semibold" style={{ color: "var(--text)" }}>
+                  Focus guidance
+                </p>
+                <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                  {nextTask
+                    ? `Pick “${nextTask.title}” and open it in focus mode before starting a new task.`
+                    : "This project is complete. Add a new micro-task only if more work is genuinely needed."}
+                </p>
+              </div>
+            </section>
 
             <section
-              className="rounded-3xl p-6 shadow-sm"
+              className="rounded-[28px] p-6 shadow-sm"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <h2
+                className="text-2xl font-semibold"
+                style={{ color: "var(--text)" }}
+              >
+                Create a new task
+              </h2>
+
+              <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                Break larger goals into short, manageable micro-tasks.
+              </p>
+
+              <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+                Use short action phrases, for example: “Draft intro paragraph” or “Reply to supervisor”.
+              </p>
+
+              <form onSubmit={handleCreateTask} className="mt-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <input
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    placeholder='Try "Read 2 pages" or "Reply to one email"'
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none"
+                    style={{
+                      backgroundColor: "var(--card)",
+                      color: "var(--text)",
+                      border: "1px solid var(--border)",
+                    }}
+                  />
+
+                  <button
+                    type="submit"
+                    className="rounded-xl px-4 py-3 text-sm font-semibold whitespace-nowrap outline-none"
+                    style={{
+                      backgroundColor: "var(--primary)",
+                      color: "var(--primary-text)",
+                    }}
+                  >
+                    Add task
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section
+              className="rounded-[28px] p-6 shadow-sm"
               style={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
@@ -369,15 +461,12 @@ function ProjectDetailPage() {
                 Tasks
               </h2>
 
-              <p
-                className="mt-2 text-sm"
-                style={{ color: "var(--muted)" }}
-              >
+              <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
                 Manage tasks for this project, then open one in focus mode.
               </p>
 
               <div className="mt-6 space-y-4">
-                {tasks.length === 0 ? (
+                {orderedTasks.length === 0 ? (
                   <div
                     className="rounded-2xl px-5 py-6"
                     style={{
@@ -387,16 +476,14 @@ function ProjectDetailPage() {
                     }}
                   >
                     <p className="text-base font-semibold">No tasks yet</p>
-                    <p
-                      className="mt-2 text-sm"
-                      style={{ color: "var(--muted)" }}
-                    >
+                    <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
                       Add a task above to start working on this project.
                     </p>
                   </div>
                 ) : (
-                  tasks.map((task) => {
+                  orderedTasks.map((task) => {
                     const isEditing = editingTaskId === task.id;
+                    const isRecommended = nextTask?.id === task.id;
 
                     return (
                       <article
@@ -404,35 +491,65 @@ function ProjectDetailPage() {
                         className="rounded-2xl p-4 shadow-sm"
                         style={{
                           backgroundColor: "var(--card)",
-                          border: "1px solid var(--border)",
+                          border: isRecommended
+                            ? "1px solid var(--primary)"
+                            : "1px solid var(--border)",
                         }}
                       >
-                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                          <div className="min-w-0 flex-1">
-                            {isEditing ? (
-                              <div>
-                                <label
-                                  className="mb-1 block text-sm font-medium"
-                                  style={{ color: "var(--text)" }}
-                                >
-                                  Task title
-                                </label>
-                                <input
-                                  type="text"
-                                  value={editTaskTitle}
-                                  onChange={(e) => setEditTaskTitle(e.target.value)}
-                                  className="w-full rounded-xl px-4 py-3 text-sm outline-none"
-                                  style={{
-                                    backgroundColor: "var(--card)",
-                                    color: "var(--text)",
-                                    border: "1px solid var(--border)",
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <>
+                        {isEditing ? (
+                          <div className="space-y-3">
+                            <div>
+                              <label
+                                className="mb-1 block text-sm font-medium"
+                                style={{ color: "var(--text)" }}
+                              >
+                                Task title
+                              </label>
+                              <input
+                                type="text"
+                                value={editTaskTitle}
+                                onChange={(e) => setEditTaskTitle(e.target.value)}
+                                className="w-full rounded-xl px-4 py-3 text-sm outline-none"
+                                style={{
+                                  backgroundColor: "var(--card)",
+                                  color: "var(--text)",
+                                  border: "1px solid var(--border)",
+                                }}
+                              />
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => handleSaveEditTask(task)}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                                style={{
+                                  backgroundColor: "var(--primary)",
+                                  color: "var(--primary-text)",
+                                }}
+                              >
+                                Save
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={handleCancelEditTask}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                                style={{
+                                  backgroundColor: "var(--secondary)",
+                                  color: "var(--secondary-text)",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-3">
                                 <p
-                                  className={`text-base font-semibold ${
+                                  className={`text-lg font-semibold ${
                                     task.completed ? "line-through opacity-80" : ""
                                   }`}
                                   style={{ color: "var(--text)" }}
@@ -440,106 +557,86 @@ function ProjectDetailPage() {
                                   {task.title}
                                 </p>
 
-                                <p
-                                  className="mt-1 text-sm"
-                                  style={{ color: "var(--muted)" }}
-                                >
-                                  {task.completed ? "Completed" : "Pending"}
-                                </p>
-                              </>
-                            )}
+                                <StatusBadge
+                                  status={task.completed ? "completed" : "pending"}
+                                />
+
+                                {isRecommended && !task.completed && (
+                                  <span
+                                    className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                                    style={{
+                                      backgroundColor: "var(--pending-soft)",
+                                      color: "var(--primary)",
+                                      border: "1px solid var(--primary)",
+                                    }}
+                                  >
+                                    ⭐ Recommended
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <Link
+                                to={`/projects/${id}/tasks/${task.id}`}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold no-underline"
+                                style={{
+                                  backgroundColor: "var(--primary)",
+                                  color: "var(--primary-text)",
+                                }}
+                              >
+                                Focus
+                              </Link>
+
+                              <button
+                                type="button"
+                                onClick={() => handleToggleTask(task.id, !task.completed)}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                                style={{
+                                  backgroundColor: task.completed
+                                    ? "var(--warning)"
+                                    : "var(--success)",
+                                  color: task.completed
+                                    ? "var(--warning-text)"
+                                    : "var(--success-text)",
+                                }}
+                                aria-label={
+                                  task.completed
+                                    ? `Mark "${task.title}" as pending`
+                                    : `Mark "${task.title}" as completed`
+                                }
+                              >
+                                {task.completed ? "Reopen" : "Complete"}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleStartEditTask(task)}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                                style={{
+                                  backgroundColor: "var(--card)",
+                                  color: "var(--secondary)",
+                                  border: "1px solid var(--border)",
+                                }}
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTask(task.id)}
+                                className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+                                style={{
+                                  backgroundColor: "var(--danger-soft)",
+                                  color: "var(--danger)",
+                                  border: "1px solid var(--danger)",
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
-
-                          <div className="flex flex-wrap gap-3">
-                            {isEditing ? (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => handleSaveEditTask(task)}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                                  style={{
-                                    backgroundColor: "var(--primary)",
-                                    color: "var(--primary-text)",
-                                  }}
-                                >
-                                  Save
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={handleCancelEditTask}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                                  style={{
-                                    backgroundColor: "var(--secondary)",
-                                    color: "var(--secondary-text)",
-                                    border: "1px solid var(--border)",
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleTask(task.id, !task.completed)}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                                  style={{
-                                    backgroundColor: task.completed
-                                      ? "var(--warning)"
-                                      : "var(--primary)",
-                                    color: task.completed
-                                      ? "var(--warning-text)"
-                                      : "var(--primary-text)",
-                                  }}
-                                  aria-label={
-                                    task.completed
-                                      ? `Mark "${task.title}" as pending`
-                                      : `Mark "${task.title}" as completed`
-                                  }
-                                >
-                                  {task.completed ? "Mark as pending" : "Mark as completed"}
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleStartEditTask(task)}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                                  style={{
-                                    backgroundColor: "var(--warning)",
-                                    color: "var(--warning-text)",
-                                  }}
-                                >
-                                  Edit
-                                </button>
-
-                                <Link
-                                  to={`/projects/${id}/tasks/${task.id}`}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold no-underline"
-                                  style={{
-                                    backgroundColor: "var(--primary)",
-                                    color: "var(--primary-text)",
-                                  }}
-                                >
-                                  Open focus
-                                </Link>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteTask(task.id)}
-                                  className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
-                                  style={{
-                                    backgroundColor: "var(--secondary)",
-                                    color: "var(--secondary-text)",
-                                    border: "1px solid var(--border)",
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
+                        )}
                       </article>
                     );
                   })
@@ -561,16 +658,13 @@ type InfoCardProps = {
 function InfoCard({ label, value }: InfoCardProps) {
   return (
     <article
-      className="rounded-3xl p-5 shadow-sm"
+      className="rounded-[24px] p-5 shadow-sm"
       style={{
         backgroundColor: "var(--card)",
         border: "1px solid var(--border)",
       }}
     >
-      <p
-        className="text-sm font-medium"
-        style={{ color: "var(--muted)" }}
-      >
+      <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
         {label}
       </p>
       <p

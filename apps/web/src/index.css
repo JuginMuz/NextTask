@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f1f5f9;
+  --bg: #f9fafb;
   --card: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --border: #e2e8f0;
+  --text: #111827;
+  --muted: #4b5563;
+  --border: #d1d5db;
 
   --primary: #1d4ed8;
   --primary-text: #ffffff;
@@ -15,7 +15,7 @@
   --secondary: #334155;
   --secondary-text: #ffffff;
 
-  --accent: #7c3aed;
+  --accent: #0f766e;
   --accent-text: #ffffff;
 
   --warning: #b45309;
@@ -24,10 +24,19 @@
   --danger: #b91c1c;
   --danger-text: #ffffff;
 
-  --success-soft: rgba(124, 58, 237, 0.14);
-  --pending-soft: rgba(29, 78, 216, 0.14);
-  --danger-soft: rgba(185, 28, 28, 0.12);
-  --warning-soft: rgba(180, 83, 9, 0.12);
+  --success: #0f766e;
+  --success-text: #ffffff;
+
+  --info: #1d4ed8;
+  --info-text: #ffffff;
+
+  --success-soft: #ccfbf1;
+  --pending-soft: #dbeafe;
+  --danger-soft: #fee2e2;
+  --warning-soft: #fef3c7;
+
+  --focus-ring: #2563eb;
+  --focus-ring-offset: #ffffff;
 }
 
 [data-theme="high-contrast"] {
@@ -43,7 +52,7 @@
   --secondary: #d1d5db;
   --secondary-text: #000000;
 
-  --accent: #facc15;
+  --accent: #2dd4bf;
   --accent-text: #000000;
 
   --warning: #f59e0b;
@@ -52,10 +61,19 @@
   --danger: #ef4444;
   --danger-text: #000000;
 
-  --success-soft: rgba(250, 204, 21, 0.18);
+  --success: #2dd4bf;
+  --success-text: #000000;
+
+  --info: #ffffff;
+  --info-text: #000000;
+
+  --success-soft: rgba(45, 212, 191, 0.18);
   --pending-soft: rgba(255, 255, 255, 0.12);
   --danger-soft: rgba(239, 68, 68, 0.16);
   --warning-soft: rgba(245, 158, 11, 0.16);
+
+  --focus-ring: #facc15;
+  --focus-ring-offset: #000000;
 }
 
 html[data-motion="reduced"] *,
@@ -66,20 +84,33 @@ html[data-motion="reduced"] *::after {
   scroll-behavior: auto !important;
 }
 
-:root {
-  --focus-ring: #2563eb;
-  --focus-ring-offset: #ffffff;
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
-[data-theme="high-contrast"] {
-  --focus-ring: #facc15;
-  --focus-ring-offset: #000000;
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 /* Strong, visible keyboard focus */
 button:focus-visible,
 input:focus-visible,
-a:focus-visible {
+a:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   box-shadow: 0 0 0 3px var(--focus-ring-offset);
@@ -87,7 +118,9 @@ a:focus-visible {
 
 /* Keep disabled controls clearly inactive */
 button:disabled,
-input:disabled {
+input:disabled,
+textarea:disabled,
+select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

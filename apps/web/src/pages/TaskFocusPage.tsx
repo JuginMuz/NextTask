@@ -2,14 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import FocusTimer from "../components/FocusTimer";
+import StatusBadge from "../components/StatusBadge";
 import { getProjects, type Project } from "../lib/projects";
 import { createSession, type FocusSession } from "../lib/sessions";
 import { getToken } from "../lib/session";
-import {
-  getTasks,
-  updateTask,
-  type Task,
-} from "../lib/tasks";
+import { getTasks, updateTask, type Task } from "../lib/tasks";
+
+const DEFAULT_FOCUS_MINUTES = 25;
 
 function TaskFocusPage() {
   const { projectId, taskId } = useParams();
@@ -23,6 +22,21 @@ function TaskFocusPage() {
   const [pageError, setPageError] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [focusDefaultMinutes, setFocusDefaultMinutes] = useState(DEFAULT_FOCUS_MINUTES);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("focus-default-minutes");
+      if (!saved) return;
+
+      const parsed = Number(saved);
+      if (!Number.isNaN(parsed) && parsed >= 5 && parsed <= 60) {
+        setFocusDefaultMinutes(parsed);
+      }
+    } catch (error) {
+      console.error("Failed to read focus default minutes:", error);
+    }
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -211,53 +225,12 @@ function TaskFocusPage() {
           </section>
         ) : (
           <>
-            <section
-              className="rounded-3xl p-6 shadow-sm"
-              style={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--border)",
-              }}
-            >
-              <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
-                Project
-              </p>
-              <h2
-                className="mt-2 text-2xl font-semibold"
-                style={{ color: "var(--text)" }}
-              >
-                {project.title}
-              </h2>
-
-              <p className="mt-4 text-sm font-medium" style={{ color: "var(--muted)" }}>
-                Current task
-              </p>
-              <p
-                className={`mt-2 text-3xl font-bold ${
-                  task.completed ? "line-through opacity-80" : ""
-                }`}
-                style={{ color: "var(--text)" }}
-              >
-                {task.title}
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={handleCompleteTask}
-                  disabled={task.completed}
-                  className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
-                  style={{
-                    backgroundColor: "var(--primary)",
-                    color: "var(--primary-text)",
-                    opacity: task.completed ? 0.6 : 1,
-                  }}
-                >
-                  {task.completed ? "Task completed" : "Complete task"}
-                </button>
-              </div>
-            </section>
-
-            <FocusTimer onComplete={handleTimerComplete} />
+            <FocusTimer
+              onComplete={handleTimerComplete}
+              defaultMinutes={focusDefaultMinutes}
+              taskTitle={task.title}
+              projectTitle={project.title}
+            />
 
             <section
               className="rounded-3xl p-6 shadow-sm"
@@ -281,7 +254,8 @@ function TaskFocusPage() {
                   className="h-full rounded-full"
                   style={{
                     width: `${progress}%`,
-                    backgroundColor: "var(--primary)",
+                    backgroundColor:
+                      progress === 100 ? "var(--success)" : "var(--primary)",
                   }}
                 />
               </div>
@@ -302,6 +276,55 @@ function TaskFocusPage() {
                   <strong style={{ color: "var(--text)" }}>Focus minutes here:</strong>{" "}
                   {totalFocusMinutes}
                 </span>
+              </div>
+            </section>
+
+            <section
+              className="rounded-3xl p-6 shadow-sm"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
+                    Project
+                  </p>
+                  <h2
+                    className="mt-2 text-2xl font-semibold"
+                    style={{ color: "var(--text)" }}
+                  >
+                    {project.title}
+                  </h2>
+
+                  <div className="mt-4">
+                    <StatusBadge status={task.completed ? "completed" : "pending"} />
+                  </div>
+                </div>
+
+                <div className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCompleteTask}
+                    disabled={task.completed}
+                    className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
+                    style={{
+                      backgroundColor: task.completed
+                        ? "var(--success)"
+                        : "var(--card)",
+                      color: task.completed
+                        ? "var(--success-text)"
+                        : "var(--primary)",
+                      border: task.completed
+                        ? "1px solid var(--success)"
+                        : "1px solid var(--primary)",
+                      opacity: task.completed ? 0.9 : 1,
+                    }}
+                  >
+                    {task.completed ? "Task completed" : "Complete task"}
+                  </button>
+                </div>
               </div>
             </section>
           </>
