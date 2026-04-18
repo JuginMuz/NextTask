@@ -1,45 +1,21 @@
-type Status = "pending" | "completed" | "warning" | "blocked";
-
-const statusConfig = {
-  pending: {
-    label: "In progress",
-    bg: "var(--pending-soft)",
-    color: "var(--primary)",
-    icon: "⏳",
-  },
-  completed: {
-    label: "Completed",
-    bg: "var(--success-soft)",
-    color: "var(--success)",
-    icon: "✔",
-  },
-  warning: {
-    label: "Needs attention",
-    bg: "var(--warning-soft)",
-    color: "var(--warning)",
-    icon: "⚠",
-  },
-  blocked: {
-    label: "Blocked",
-    bg: "var(--danger-soft)",
-    color: "var(--danger)",
-    icon: "⛔",
-  },
+type StatusBadgeProps = {
+  status: "pending" | "completed";
 };
 
-function StatusBadge({ status }: { status: Status }) {
-  const config = statusConfig[status];
+function StatusBadge({ status }: StatusBadgeProps) {
+  const isCompleted = status === "completed";
 
   return (
     <span
       className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
       style={{
-        backgroundColor: config.bg,
-        color: config.color,
+        backgroundColor: isCompleted ? "var(--success-soft)" : "var(--pending-soft)",
+        color: isCompleted ? "var(--success)" : "var(--primary)",
+        border: "1px solid var(--border)",
       }}
     >
-      <span aria-hidden>{config.icon}</span>
-      {config.label}
+      <span aria-hidden="true">{isCompleted ? "✔" : "⏳"}</span>
+      {isCompleted ? "Completed" : "In progress"}
     </span>
   );
 }

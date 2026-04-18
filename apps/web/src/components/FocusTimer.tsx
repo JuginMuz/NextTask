@@ -157,21 +157,13 @@ function FocusTimer({
 
     const deltaSeconds = delta * 60;
 
-    setTimeLeft((prev) => {
-      const next = Math.min(
-        MAX_MINUTES * 60,
-        Math.max(MIN_MINUTES * 60, prev + deltaSeconds)
-      );
-      return next;
-    });
+    setTimeLeft((prev) =>
+      Math.min(MAX_MINUTES * 60, Math.max(MIN_MINUTES * 60, prev + deltaSeconds))
+    );
 
-    setTotalSeconds((prev) => {
-      const next = Math.min(
-        MAX_MINUTES * 60,
-        Math.max(MIN_MINUTES * 60, prev + deltaSeconds)
-      );
-      return next;
-    });
+    setTotalSeconds((prev) =>
+      Math.min(MAX_MINUTES * 60, Math.max(MIN_MINUTES * 60, prev + deltaSeconds))
+    );
 
     setJustCompleted(false);
   }
@@ -186,10 +178,7 @@ function FocusTimer({
     >
       <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2
-            className="text-2xl font-semibold"
-            style={{ color: "var(--text)" }}
-          >
+          <h2 className="text-2xl font-semibold" style={{ color: "var(--text)" }}>
             Focus Session
           </h2>
           <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
@@ -219,10 +208,7 @@ function FocusTimer({
         <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
           Current task
         </p>
-        <p
-          className="mt-2 text-2xl font-bold"
-          style={{ color: "var(--text)" }}
-        >
+        <p className="mt-2 text-2xl font-bold" style={{ color: "var(--text)" }}>
           {taskTitle || "Focus task"}
         </p>
         {projectTitle && (
@@ -258,16 +244,10 @@ function FocusTimer({
             aria-live="polite"
             aria-label={`Time remaining ${formatTime(timeLeft)}`}
           >
-            <div
-              className="text-6xl font-bold tracking-tight"
-              style={{ color: "var(--text)" }}
-            >
+            <div className="text-6xl font-bold tracking-tight" style={{ color: "var(--text)" }}>
               {formatTime(timeLeft)}
             </div>
-            <div
-              className="mt-2 text-sm font-medium"
-              style={{ color: "var(--muted)" }}
-            >
+            <div className="mt-2 text-sm font-medium" style={{ color: "var(--muted)" }}>
               {displayedMinutes} minute{displayedMinutes === 1 ? "" : "s"}
             </div>
           </div>
@@ -289,7 +269,7 @@ function FocusTimer({
         </div>
 
         <div
-          className="mb-3 h-3 w-full max-w-md overflow-hidden rounded-full"
+          className="mb-3 h-4 w-full max-w-md overflow-hidden rounded-full"
           style={{ backgroundColor: "var(--border)" }}
           aria-hidden="true"
         >
@@ -302,10 +282,7 @@ function FocusTimer({
           />
         </div>
 
-        <p
-          className="mb-6 text-sm font-medium"
-          style={{ color: "var(--muted)" }}
-        >
+        <p className="mb-6 text-sm font-medium" style={{ color: "var(--muted)" }}>
           {Math.round(progressPercent)}% of session elapsed
         </p>
 
@@ -315,11 +292,7 @@ function FocusTimer({
               type="button"
               onClick={start}
               disabled={isSaving}
-              aria-label={
-                timeLeft === totalSeconds
-                  ? "Start focus session"
-                  : "Resume focus session"
-              }
+              aria-label={timeLeft === totalSeconds ? "Start focus session" : "Resume focus session"}
               className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
               style={{
                 backgroundColor: "var(--primary)",

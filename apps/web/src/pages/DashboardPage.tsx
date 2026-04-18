@@ -302,8 +302,9 @@ function DashboardPage() {
                 )}
 
                 <div
-                  className="h-2 w-full overflow-hidden rounded-full"
+                  className="h-4 w-full overflow-hidden rounded-full"
                   style={{ backgroundColor: "var(--border)" }}
+                  aria-hidden="true"
                 >
                   <div
                     className="h-full rounded-full"
@@ -316,6 +317,10 @@ function DashboardPage() {
                     }}
                   />
                 </div>
+
+                <p className="mt-2 text-xs font-medium" style={{ color: "var(--muted)" }}>
+                  {nextAction.project.progress}% complete
+                </p>
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   {nextAction.task ? (
@@ -511,8 +516,9 @@ function DashboardPage() {
                       </div>
 
                       <div
-                        className="mt-3 h-2 w-full overflow-hidden rounded-full"
+                        className="mt-3 h-4 w-full overflow-hidden rounded-full"
                         style={{ backgroundColor: "var(--border)" }}
+                        aria-hidden="true"
                       >
                         <div
                           className="h-full rounded-full"
@@ -526,12 +532,16 @@ function DashboardPage() {
                       </div>
 
                       <div
-                        className="mt-2 flex justify-between text-xs"
+                        className="mt-2 flex justify-between text-xs font-medium"
                         style={{ color: "var(--muted)" }}
                       >
-                        <span>{project.progress}%</span>
                         <span>
-                          {project.completedTasks}/{project.totalTasks} completed
+                          <strong style={{ color: "var(--text)" }}>Progress:</strong>{" "}
+                          {project.progress}%
+                        </span>
+                        <span>
+                          <strong style={{ color: "var(--text)" }}>Completed:</strong>{" "}
+                          {project.completedTasks}/{project.totalTasks}
                         </span>
                       </div>
 

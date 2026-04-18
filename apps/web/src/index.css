@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f9fafb;
+  --bg: #eef2f7;
   --card: #ffffff;
-  --text: #111827;
-  --muted: #4b5563;
-  --border: #d1d5db;
+  --text: #0b1220;
+  --muted: #334155;
+  --border: #cbd5e1;
 
   --primary: #1d4ed8;
   --primary-text: #ffffff;
@@ -15,8 +15,11 @@
   --secondary: #334155;
   --secondary-text: #ffffff;
 
-  --accent: #0f766e;
+  --accent: #7c3aed;
   --accent-text: #ffffff;
+
+  --success: #0f766e;
+  --success-text: #ffffff;
 
   --warning: #b45309;
   --warning-text: #ffffff;
@@ -24,18 +27,12 @@
   --danger: #b91c1c;
   --danger-text: #ffffff;
 
-  --success: #0f766e;
-  --success-text: #ffffff;
+  --success-soft: rgba(15, 118, 110, 0.16);
+  --pending-soft: rgba(29, 78, 216, 0.14);
+  --danger-soft: rgba(185, 28, 28, 0.12);
+  --warning-soft: rgba(180, 83, 9, 0.14);
 
-  --info: #1d4ed8;
-  --info-text: #ffffff;
-
-  --success-soft: #ccfbf1;
-  --pending-soft: #dbeafe;
-  --danger-soft: #fee2e2;
-  --warning-soft: #fef3c7;
-
-  --focus-ring: #2563eb;
+  --focus-ring: #111827;
   --focus-ring-offset: #ffffff;
 }
 
@@ -43,7 +40,7 @@
   --bg: #000000;
   --card: #111111;
   --text: #ffffff;
-  --muted: #e5e7eb;
+  --muted: #f3f4f6;
   --border: #ffffff;
 
   --primary: #ffffff;
@@ -52,8 +49,11 @@
   --secondary: #d1d5db;
   --secondary-text: #000000;
 
-  --accent: #2dd4bf;
+  --accent: #facc15;
   --accent-text: #000000;
+
+  --success: #5eead4;
+  --success-text: #000000;
 
   --warning: #f59e0b;
   --warning-text: #000000;
@@ -61,16 +61,10 @@
   --danger: #ef4444;
   --danger-text: #000000;
 
-  --success: #2dd4bf;
-  --success-text: #000000;
-
-  --info: #ffffff;
-  --info-text: #000000;
-
-  --success-soft: rgba(45, 212, 191, 0.18);
+  --success-soft: rgba(94, 234, 212, 0.22);
   --pending-soft: rgba(255, 255, 255, 0.12);
-  --danger-soft: rgba(239, 68, 68, 0.16);
-  --warning-soft: rgba(245, 158, 11, 0.16);
+  --danger-soft: rgba(239, 68, 68, 0.18);
+  --warning-soft: rgba(245, 158, 11, 0.2);
 
   --focus-ring: #facc15;
   --focus-ring-offset: #000000;
@@ -84,43 +78,30 @@ html[data-motion="reduced"] *::after {
   scroll-behavior: auto !important;
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
-body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-/* Strong, visible keyboard focus */
 button:focus-visible,
 input:focus-visible,
 a:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px var(--focus-ring-offset);
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--focus-ring-offset);
+  border-radius: 0.75rem;
 }
 
-/* Keep disabled controls clearly inactive */
 button:disabled,
 input:disabled,
 textarea:disabled,
 select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+[data-theme="high-contrast"] ::placeholder {
+  color: #e5e7eb;
 }

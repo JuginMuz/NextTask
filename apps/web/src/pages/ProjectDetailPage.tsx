@@ -285,8 +285,9 @@ function ProjectDetailPage() {
               </h2>
 
               <div
-                className="mt-5 h-3 w-full overflow-hidden rounded-full"
+                className="mt-5 h-4 w-full overflow-hidden rounded-full"
                 style={{ backgroundColor: "var(--border)" }}
+                aria-hidden="true"
               >
                 <div
                   className="h-full rounded-full"
@@ -298,10 +299,19 @@ function ProjectDetailPage() {
                 />
               </div>
 
-              <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
-                {completedTasks} of {totalTasks} task
-                {totalTasks === 1 ? "" : "s"} completed
-              </p>
+              <div
+                className="mt-3 flex flex-wrap gap-4 text-sm"
+                style={{ color: "var(--muted)" }}
+              >
+                <span>
+                  <strong style={{ color: "var(--text)" }}>Progress:</strong>{" "}
+                  {progress}%
+                </span>
+                <span>
+                  <strong style={{ color: "var(--text)" }}>Completed:</strong>{" "}
+                  {completedTasks} / {totalTasks}
+                </span>
+              </div>
 
               {progress === 0 && (
                 <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
@@ -370,6 +380,7 @@ function ProjectDetailPage() {
                       style={{
                         backgroundColor: "var(--success-soft)",
                         color: "var(--success)",
+                        border: "1px solid var(--border)",
                       }}
                     >
                       All tasks completed

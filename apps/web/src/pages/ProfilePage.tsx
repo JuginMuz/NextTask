@@ -62,7 +62,9 @@ function ProfilePage() {
 
   function handleToggleTheme() {
     toggleTheme();
-    showSaved(theme === "default" ? "High contrast enabled" : "Theme set to standard");
+    showSaved(
+      theme === "default" ? "High contrast enabled" : "Theme set to standard"
+    );
   }
 
   function handleToggleMotion() {
@@ -143,7 +145,10 @@ function ProfilePage() {
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                    <p
+                      className="text-sm font-semibold"
+                      style={{ color: "var(--text)" }}
+                    >
                       Theme
                     </p>
                     <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
@@ -160,10 +165,17 @@ function ProfilePage() {
                     className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
                     style={{
                       backgroundColor:
-                        theme === "high-contrast" ? "var(--success-soft)" : "var(--primary)",
+                        theme === "high-contrast"
+                          ? "var(--success-soft)"
+                          : "var(--primary)",
                       color:
-                        theme === "high-contrast" ? "var(--success)" : "var(--primary-text)",
-                      border: theme === "high-contrast" ? "1px solid var(--border)" : "none",
+                        theme === "high-contrast"
+                          ? "var(--success)"
+                          : "var(--primary-text)",
+                      border:
+                        theme === "high-contrast"
+                          ? "1px solid var(--border)"
+                          : "1px solid var(--primary)",
                       minWidth: "9rem",
                     }}
                     aria-pressed={theme === "high-contrast"}
@@ -182,7 +194,10 @@ function ProfilePage() {
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                    <p
+                      className="text-sm font-semibold"
+                      style={{ color: "var(--text)" }}
+                    >
                       Motion
                     </p>
                     <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
@@ -223,7 +238,10 @@ function ProfilePage() {
                   border: "1px solid var(--border)",
                 }}
               >
-                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                <p
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--text)" }}
+                >
                   Default focus timer
                 </p>
                 <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
@@ -245,7 +263,9 @@ function ProfilePage() {
                         style={{
                           backgroundColor: isActive ? "var(--primary)" : "var(--card)",
                           color: isActive ? "var(--primary-text)" : "var(--text)",
-                          border: "1px solid var(--border)",
+                          border: isActive
+                            ? "1px solid var(--primary)"
+                            : "1px solid var(--border)",
                         }}
                         aria-pressed={isActive}
                       >
@@ -257,7 +277,9 @@ function ProfilePage() {
 
                 <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
                   Current default:{" "}
-                  <strong style={{ color: "var(--text)" }}>{focusMinutes} minutes</strong>
+                  <strong style={{ color: "var(--text)" }}>
+                    {focusMinutes} minutes
+                  </strong>
                 </p>
               </div>
             </div>

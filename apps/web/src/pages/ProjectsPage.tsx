@@ -422,8 +422,9 @@ function ProjectsPage() {
                       </div>
 
                       <div
-                        className="mt-5 h-2.5 w-full overflow-hidden rounded-full"
+                        className="mt-5 h-4 w-full overflow-hidden rounded-full"
                         style={{ backgroundColor: "var(--border)" }}
+                        aria-hidden="true"
                       >
                         <div
                           className="h-full rounded-full"
@@ -435,6 +436,10 @@ function ProjectsPage() {
                           }}
                         />
                       </div>
+
+                      <p className="mt-2 text-xs font-medium" style={{ color: "var(--muted)" }}>
+                        {project.progress}% complete
+                      </p>
 
                       <div className="mt-5 flex flex-wrap gap-2">
                         <Link
@@ -465,8 +470,9 @@ function ProjectsPage() {
                           onClick={() => handleDeleteProject(project.id)}
                           className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
                           style={{
-                            backgroundColor: "var(--danger)",
-                            color: "var(--danger-text)",
+                            backgroundColor: "var(--danger-soft)",
+                            color: "var(--danger)",
+                            border: "1px solid var(--danger)",
                           }}
                         >
                           Delete

@@ -22,7 +22,9 @@ function TaskFocusPage() {
   const [pageError, setPageError] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [focusDefaultMinutes, setFocusDefaultMinutes] = useState(DEFAULT_FOCUS_MINUTES);
+  const [focusDefaultMinutes, setFocusDefaultMinutes] = useState(
+    DEFAULT_FOCUS_MINUTES
+  );
 
   useEffect(() => {
     try {
@@ -108,7 +110,9 @@ function TaskFocusPage() {
     try {
       const newSession = await createSession(duration, token);
       setSessions((prev) => [newSession, ...prev]);
-      setSessionMessage(`Nice work — ${duration} minutes saved to your focus history.`);
+      setSessionMessage(
+        `Nice work — ${duration} minutes saved to your focus history.`
+      );
       setPageError("");
     } catch (error) {
       console.error("Failed to save focus session:", error);
@@ -249,6 +253,7 @@ function TaskFocusPage() {
               <div
                 className="mt-5 h-4 w-full overflow-hidden rounded-full"
                 style={{ backgroundColor: "var(--border)" }}
+                aria-hidden="true"
               >
                 <div
                   className="h-full rounded-full"
@@ -273,7 +278,9 @@ function TaskFocusPage() {
                   {completedTasks} / {totalTasks}
                 </span>
                 <span>
-                  <strong style={{ color: "var(--text)" }}>Focus minutes here:</strong>{" "}
+                  <strong style={{ color: "var(--text)" }}>
+                    Focus minutes here:
+                  </strong>{" "}
                   {totalFocusMinutes}
                 </span>
               </div>
@@ -288,7 +295,10 @@ function TaskFocusPage() {
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "var(--muted)" }}
+                  >
                     Project
                   </p>
                   <h2
@@ -299,7 +309,9 @@ function TaskFocusPage() {
                   </h2>
 
                   <div className="mt-4">
-                    <StatusBadge status={task.completed ? "completed" : "pending"} />
+                    <StatusBadge
+                      status={task.completed ? "completed" : "pending"}
+                    />
                   </div>
                 </div>
 
