@@ -6,7 +6,7 @@
   --bg: #eef2f7;
   --card: #ffffff;
   --text: #0b1220;
-  --muted: #334155;
+  --muted: #475569;
   --border: #cbd5e1;
 
   --primary: #1d4ed8;
@@ -95,6 +95,12 @@ textarea:disabled,
 select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--danger) !important;
 }
 
 ::placeholder {
