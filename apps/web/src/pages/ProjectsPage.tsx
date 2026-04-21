@@ -10,6 +10,8 @@ import {
   updateProject,
   type Project,
 } from "../lib/projects";
+import Seo from "../components/Seo";
+
 
 function ProjectsPage() {
   const navigate = useNavigate();
@@ -209,6 +211,12 @@ function ProjectsPage() {
 
   return (
     <>
+      <Seo
+        title="Projects | NextTask"
+        description="Organise your projects and break down goals into manageable micro-tasks with NextTask."
+        canonical="https://your-domain.com/projects"
+        robots="noindex, nofollow"
+      />
       <section className="space-y-6">
         <header
           className="rounded-[28px] px-6 py-6 shadow-sm"

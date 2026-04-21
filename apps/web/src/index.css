@@ -70,12 +70,40 @@
   --focus-ring-offset: #000000;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Stronger reduced-motion handling */
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+
 html[data-motion="reduced"] *,
 html[data-motion="reduced"] *::before,
 html[data-motion="reduced"] *::after {
-  animation: none !important;
-  transition: none !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  animation-delay: 0ms !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
   scroll-behavior: auto !important;
+}
+
+html[data-motion="reduced"] * {
+  transform: none !important;
 }
 
 button:focus-visible,
@@ -110,4 +138,23 @@ select[aria-invalid="true"] {
 
 [data-theme="high-contrast"] ::placeholder {
   color: #e5e7eb;
+}
+
+@keyframes timerPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.015);
+    opacity: 0.96;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-timerPulse {
+  animation: timerPulse 1.6s ease-in-out infinite;
 }

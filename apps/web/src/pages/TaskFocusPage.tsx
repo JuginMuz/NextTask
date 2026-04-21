@@ -7,11 +7,12 @@ import { getProjects, type Project } from "../lib/projects";
 import { createSession, type FocusSession } from "../lib/sessions";
 import { getToken } from "../lib/session";
 import { getTasks, updateTask, type Task } from "../lib/tasks";
+import Seo from "../components/Seo";
 
 const DEFAULT_FOCUS_MINUTES = 25;
 
 function TaskFocusPage() {
-  const { projectId, taskId } = useParams();
+  const { taskId } = useParams();
   const navigate = useNavigate();
   const token = getToken();
 
@@ -46,36 +47,66 @@ function TaskFocusPage() {
       return;
     }
 
-    if (!projectId || !taskId) {
+    if (!taskId) {
       navigate("/projects");
       return;
     }
 
     async function loadTaskFocusPage() {
       try {
+        setLoading(true);
         setPageError("");
 
-        const [projects, projectTasks] = await Promise.all([
-          getProjects(token),
-          getTasks(token, projectId),
-        ]);
+        const projects = await getProjects(token);
 
-        const currentProject = projects.find((p) => p.id === projectId);
-        const currentTask = projectTasks.find((t) => t.id === taskId);
+        if (projects.length === 0) {
+          setPageError("No projects found.");
+          setProject(null);
+          setTask(null);
+          setTasks([]);
+          return;
+        }
 
-        if (!currentProject) {
+        const taskLists = await Promise.all(
+          projects.map(async (project) => {
+            const projectTasks = await getTasks(token, project.id);
+            return { project, projectTasks };
+          })
+        );
+
+        let matchedProject: Project | null = null;
+        let matchedTask: Task | null = null;
+        let matchedProjectTasks: Task[] = [];
+
+        for (const entry of taskLists) {
+          const foundTask = entry.projectTasks.find((item) => item.id === taskId);
+          if (foundTask) {
+            matchedProject = entry.project;
+            matchedTask = foundTask;
+            matchedProjectTasks = entry.projectTasks;
+            break;
+          }
+        }
+
+        if (!matchedProject) {
           setPageError("Project not found.");
+          setProject(null);
+          setTask(null);
+          setTasks([]);
           return;
         }
 
-        if (!currentTask) {
+        if (!matchedTask) {
           setPageError("Task not found.");
+          setProject(matchedProject);
+          setTask(null);
+          setTasks(matchedProjectTasks);
           return;
         }
 
-        setProject(currentProject);
-        setTasks(projectTasks);
-        setTask(currentTask);
+        setProject(matchedProject);
+        setTasks(matchedProjectTasks);
+        setTask(matchedTask);
       } catch (error) {
         console.error("Failed to load focus page:", error);
         setPageError("Unable to load this task right now.");
@@ -85,7 +116,7 @@ function TaskFocusPage() {
     }
 
     void loadTaskFocusPage();
-  }, [projectId, taskId, token, navigate]);
+  }, [taskId, token, navigate]);
 
   async function handleCompleteTask() {
     if (!token || !task) return;
@@ -142,6 +173,13 @@ function TaskFocusPage() {
         color: "var(--text)",
       }}
     >
+      <Seo
+        title="Focus Session | NextTask"
+        description="Run distraction-free focus sessions with accessible timer support in NextTask."
+        canonical={window.location.href}
+        robots="noindex, follow"
+      />
+
       <div className="mx-auto max-w-5xl space-y-6">
         <header
           className="rounded-3xl px-6 py-5 shadow-sm"
@@ -151,7 +189,7 @@ function TaskFocusPage() {
           }}
         >
           <Link
-            to={projectId ? `/projects/${projectId}` : "/projects"}
+            to={project ? `/projects/${project.id}` : "/projects"}
             className="text-sm font-medium no-underline"
             style={{ color: "var(--muted)" }}
           >

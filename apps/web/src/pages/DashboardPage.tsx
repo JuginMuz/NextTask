@@ -5,6 +5,7 @@ import StatusBadge from "../components/StatusBadge";
 import { getProjects, type Project } from "../lib/projects";
 import { getToken } from "../lib/session";
 import { getTasks, type Task } from "../lib/tasks";
+import Seo from "../components/Seo";
 
 type NextAction = {
   project: Project;
@@ -29,6 +30,7 @@ function DashboardPage() {
     async function loadDashboardData() {
       try {
         setPageError("");
+        setLoading(true);
 
         const fetchedProjects = await getProjects(token);
         setProjects(fetchedProjects);
@@ -40,7 +42,11 @@ function DashboardPage() {
         if (unfinishedProjects.length > 0) {
           const candidateProject = unfinishedProjects[0];
           const projectTasks = await getTasks(token, candidateProject.id);
-          const nextTask = projectTasks.find((task) => !task.completed) ?? null;
+
+          const nextTask =
+            [...projectTasks]
+              .filter((task) => !task.completed)
+              .sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0] ?? null;
 
           setNextAction({
             project: candidateProject,
@@ -131,6 +137,13 @@ function DashboardPage() {
         color: "var(--text)",
       }}
     >
+      <Seo
+        title="Dashboard | NextTask"
+        description="Your NextTask dashboard."
+        canonical="https://your-domain.com/dashboard"
+        robots="noindex, follow"
+      />
+
       <div className="mx-auto max-w-6xl">
         <header
           className="mb-6 rounded-[28px] px-6 py-6 shadow-sm"
@@ -325,7 +338,7 @@ function DashboardPage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   {nextAction.task ? (
                     <Link
-                      to={`/projects/${nextAction.project.id}/tasks/${nextAction.task.id}`}
+                      to={`/task/${nextAction.task.id}`}
                       className="inline-block rounded-xl px-4 py-3 text-sm font-semibold no-underline"
                       style={{
                         backgroundColor: "var(--primary)",

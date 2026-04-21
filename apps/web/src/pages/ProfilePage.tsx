@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { clearToken } from "../lib/session";
+import { clearToken, getToken } from "../lib/session";
 import { useTheme } from "../lib/theme";
+import { updatePassword, deleteAccount } from "../lib/account";
+import Seo from "../components/Seo";
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const token = getToken();
   const { theme, motion, toggleTheme, toggleMotion } = useTheme();
 
   const [focusMinutes, setFocusMinutes] = useState<number>(25);
   const [savedMessage, setSavedMessage] = useState("");
+  const [pageError, setPageError] = useState("");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -74,6 +78,7 @@ function ProfilePage() {
     let isValid = true;
 
     resetPasswordErrors();
+    setPageError("");
 
     if (!currentPassword.trim()) {
       setCurrentPasswordError("Enter your current password.");
@@ -99,25 +104,61 @@ function ProfilePage() {
     return isValid;
   }
 
-  function handlePasswordSubmit(e: React.FormEvent) {
+  async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
     if (!validatePasswordForm()) {
       currentPasswordRef.current?.focus();
       return;
     }
 
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    resetPasswordErrors();
-    showSaved("Password details validated. Connect this form to the backend next.");
+    try {
+      await updatePassword(
+        {
+          currentPassword: currentPassword.trim(),
+          newPassword: newPassword.trim(),
+        },
+        token
+      );
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      resetPasswordErrors();
+      setPageError("");
+      showSaved("Password updated successfully.");
+    } catch (error) {
+      console.error("Failed to update password:", error);
+      setPageError(
+        error instanceof Error ? error.message : "Could not update password."
+      );
+    }
   }
 
-  function handleDeleteAccount() {
-    setShowDeleteConfirm(false);
-    showSaved("Delete account flow can be connected to the backend next.");
+  async function handleDeleteAccount() {
+  if (!token) {
+    navigate("/login");
+    return;
   }
+
+  try {
+    await deleteAccount(token);
+    setShowDeleteConfirm(false);
+    clearToken();
+    navigate("/register");
+  } catch (error) {
+    console.error("Failed to delete account:", error);
+    setShowDeleteConfirm(false);
+    setPageError(
+      error instanceof Error ? error.message : "Could not delete account."
+    );
+  }
+}
 
   function handleToggleTheme() {
     toggleTheme();
@@ -138,6 +179,13 @@ function ProfilePage() {
 
   return (
     <>
+      <Seo
+        title="Profile | NextTask"
+        description="Manage your accessibility and productivity preferences in NextTask."
+        canonical="https://your-domain.com/profile"
+        robots="noindex, follow"
+      />
+
       <main
         className="min-h-screen px-6 py-8"
         style={{
@@ -174,6 +222,20 @@ function ProfilePage() {
                 }}
               >
                 {savedMessage}
+              </div>
+            )}
+
+            {pageError && (
+              <div
+                className="mt-4 rounded-xl px-4 py-3 text-sm"
+                role="alert"
+                style={{
+                  backgroundColor: "var(--danger-soft)",
+                  color: "var(--danger)",
+                  border: "1px solid var(--danger)",
+                }}
+              >
+                {pageError}
               </div>
             )}
           </header>
@@ -255,7 +317,7 @@ function ProfilePage() {
                       <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
                         Reduced motion: {motion === "reduced" ? "On" : "Off"}
                       </p>
-                      <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                      <p className="mt-2 text-sm font-medium" style={{ color: "var(--success)" }}>
                         Reduce motion for a calmer and less distracting experience.
                       </p>
                     </div>
@@ -526,7 +588,7 @@ function ProfilePage() {
       <ConfirmDialog
         open={showDeleteConfirm}
         title="Delete account?"
-        description="This action is permanent. If you keep this feature, it should require a real backend confirmation step."
+        description="This action is permanent. Your account, projects, tasks, and saved focus sessions will be deleted."
         confirmLabel="Delete account"
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteAccount}

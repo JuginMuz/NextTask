@@ -18,22 +18,34 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function getInitialMotionPreference(): MotionPreference {
+  try {
+    const savedMotion = localStorage.getItem("motion");
+    if (savedMotion === "reduced") {
+      return "reduced";
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return "reduced";
+    }
+  } catch (error) {
+    console.error("Failed to read motion preference:", error);
+  }
+
+  return "default";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("default");
-  const [motion, setMotion] = useState<MotionPreference>("default");
+  const [motion, setMotion] = useState<MotionPreference>(getInitialMotionPreference);
   const hasLoadedPreferences = useRef(false);
 
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem("theme");
-      const savedMotion = localStorage.getItem("motion");
 
       if (savedTheme === "high-contrast") {
         setTheme("high-contrast");
-      }
-
-      if (savedMotion === "reduced") {
-        setMotion("reduced");
       }
     } catch (error) {
       console.error("Failed to read accessibility preferences:", error);

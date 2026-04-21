@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "../lib/theme";
 
 type FocusTimerProps = {
   onComplete: (duration: number) => Promise<void> | void;
@@ -17,6 +18,8 @@ function FocusTimer({
   taskTitle,
   projectTitle,
 }: FocusTimerProps) {
+  const { motion } = useTheme();
+
   const [timeLeft, setTimeLeft] = useState(defaultMinutes * 60);
   const [running, setRunning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -24,12 +27,15 @@ function FocusTimer({
   const [totalSeconds, setTotalSeconds] = useState(defaultMinutes * 60);
   const intervalRef = useRef<number | null>(null);
 
+  const isReducedMotion = motion === "reduced";
+
   useEffect(() => {
     if (running || isSaving) return;
+
     setTimeLeft(defaultMinutes * 60);
     setTotalSeconds(defaultMinutes * 60);
     setJustCompleted(false);
-  }, [defaultMinutes, running, isSaving]);
+    }, [defaultMinutes]);
 
   const displayedMinutes = Math.max(1, Math.ceil(timeLeft / 60));
 
@@ -153,7 +159,7 @@ function FocusTimer({
   }
 
   function changeTimerByMinutes(delta: number) {
-    if (isSaving) return;
+    if (isSaving || running) return;
 
     const deltaSeconds = delta * 60;
 
@@ -222,14 +228,27 @@ function FocusTimer({
         Short task? Try 10–15 min. Longer task? Add time as needed.
       </div>
 
+      {isReducedMotion && (
+        <div
+          className="mt-4 rounded-xl px-4 py-3 text-sm font-medium"
+          style={{
+            backgroundColor: "var(--pending-soft)",
+            color: "var(--primary)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          Reduced motion is active. Timer movement and animated transitions are minimised.
+        </div>
+      )}
+
       <div className="mt-6 flex flex-col items-center">
         <div className="mb-6 flex items-center justify-center gap-2">
           <button
             type="button"
             onClick={() => changeTimerByMinutes(-1)}
-            disabled={isSaving || timeLeft <= MIN_MINUTES * 60}
+            disabled={isSaving || running || timeLeft <= MIN_MINUTES * 60}
             aria-label="Remove 1 minute from timer"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold outline-none"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold outline-none transition-transform duration-200 hover:scale-110"
             style={{
               backgroundColor: "var(--secondary)",
               color: "var(--secondary-text)",
@@ -244,7 +263,14 @@ function FocusTimer({
             aria-live="polite"
             aria-label={`Time remaining ${formatTime(timeLeft)}`}
           >
-            <div className="text-6xl font-bold tracking-tight" style={{ color: "var(--text)" }}>
+            <div
+              className={`text-6xl font-bold tracking-tight ${
+                running && !isReducedMotion ? "animate-timerPulse" : ""
+              }`}
+              style={{
+                color: "var(--text)",
+              }}
+            >
               {formatTime(timeLeft)}
             </div>
             <div className="mt-2 text-sm font-medium" style={{ color: "var(--muted)" }}>
@@ -255,9 +281,9 @@ function FocusTimer({
           <button
             type="button"
             onClick={() => changeTimerByMinutes(1)}
-            disabled={isSaving || timeLeft >= MAX_MINUTES * 60}
+            disabled={isSaving || running || timeLeft >= MAX_MINUTES * 60}
             aria-label="Add 1 minute to timer"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold outline-none"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold outline-none transition-transform duration-200 hover:scale-110"
             style={{
               backgroundColor: "var(--secondary)",
               color: "var(--secondary-text)",
@@ -274,7 +300,7 @@ function FocusTimer({
           aria-hidden="true"
         >
           <div
-            className="h-full rounded-full"
+            className="h-full rounded-full transition-all duration-700 ease-in-out"
             style={{
               width: `${progressPercent}%`,
               backgroundColor: stateStyles.barColor,
@@ -293,7 +319,7 @@ function FocusTimer({
               onClick={start}
               disabled={isSaving}
               aria-label={timeLeft === totalSeconds ? "Start focus session" : "Resume focus session"}
-              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none transition-transform duration-200 hover:scale-[1.04]"
               style={{
                 backgroundColor: "var(--primary)",
                 color: "var(--primary-text)",
@@ -306,7 +332,7 @@ function FocusTimer({
               type="button"
               onClick={pause}
               aria-label="Pause focus session"
-              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+              className="rounded-xl px-4 py-2 text-sm font-semibold outline-none transition-transform duration-200 hover:scale-[1.04]"
               style={{
                 backgroundColor: "var(--warning)",
                 color: "var(--warning-text)",
@@ -321,7 +347,7 @@ function FocusTimer({
             onClick={reset}
             disabled={isSaving}
             aria-label="Reset focus session"
-            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none transition-transform duration-200 hover:scale-[1.04]"
             style={{
               backgroundColor: "var(--secondary)",
               color: "var(--secondary-text)",
@@ -333,7 +359,9 @@ function FocusTimer({
         </div>
 
         <div
-          className="mt-4 rounded-xl px-4 py-3 text-sm font-medium"
+          className={`mt-4 rounded-xl px-4 py-3 text-sm font-medium ${
+            !isReducedMotion ? "transition-all duration-300" : ""
+          }`}
           aria-live="polite"
           style={{
             backgroundColor:

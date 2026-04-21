@@ -14,7 +14,7 @@ import {
 } from "../lib/tasks";
 
 function ProjectDetailPage() {
-  const { id } = useParams();
+  const { projectId } = useParams();
   const navigate = useNavigate();
   const token = getToken();
 
@@ -41,21 +41,22 @@ function ProjectDetailPage() {
       return;
     }
 
-    if (!id) {
+    if (!projectId) {
       navigate("/projects");
       return;
     }
 
     async function loadProjectPage() {
       try {
+        setLoading(true);
         setPageError("");
 
         const [projects, projectTasks] = await Promise.all([
           getProjects(token),
-          getTasks(token, id),
+          getTasks(token, projectId),
         ]);
 
-        const currentProject = projects.find((p) => p.id === id);
+        const currentProject = projects.find((p) => p.id === projectId);
 
         if (!currentProject) {
           setPageError("Project not found.");
@@ -75,7 +76,7 @@ function ProjectDetailPage() {
     }
 
     void loadProjectPage();
-  }, [id, token, navigate]);
+  }, [projectId, token, navigate]);
 
   useEffect(() => {
     if (editingTaskId && editTaskRef.current) {
@@ -126,7 +127,7 @@ function ProjectDetailPage() {
 
   async function handleCreateTask(e: React.FormEvent) {
     e.preventDefault();
-    if (!token || !id) return;
+    if (!token || !projectId) return;
 
     if (!validateNewTask()) {
       createTaskRef.current?.focus();
@@ -136,7 +137,7 @@ function ProjectDetailPage() {
     const trimmedTitle = newTaskTitle.trim();
 
     try {
-      const createdTask = await createTask(trimmedTitle, token, id);
+      const createdTask = await createTask(trimmedTitle, token, projectId);
       setTasks((prev) => [createdTask, ...prev]);
       setNewTaskTitle("");
       setNewTaskError("");
@@ -238,10 +239,13 @@ function ProjectDetailPage() {
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
-  const nextTask = useMemo(
-    () => tasks.find((task) => !task.completed) ?? null,
-    [tasks]
-  );
+  const nextTask = useMemo(() => {
+    return (
+        [...tasks]
+        .filter((task) => !task.completed)
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0] ?? null
+    );
+    }, [tasks]);
 
   const orderedTasks = useMemo(() => {
     return [...tasks].sort((a, b) => {
@@ -459,7 +463,7 @@ function ProjectDetailPage() {
                   >
                     {nextTask ? (
                       <Link
-                        to={`/projects/${id}/tasks/${nextTask.id}`}
+                        to={`/task/${nextTask.id}`}
                         className="inline-block rounded-xl px-4 py-3 text-sm font-semibold no-underline"
                         style={{
                           backgroundColor: "var(--primary)",
@@ -719,7 +723,7 @@ function ProjectDetailPage() {
 
                               <div className="flex flex-wrap gap-2">
                                 <Link
-                                  to={`/projects/${id}/tasks/${task.id}`}
+                                  to={`/task/${task.id}`}
                                   className="rounded-xl px-4 py-2 text-sm font-semibold no-underline"
                                   style={{
                                     backgroundColor: "var(--primary)",
