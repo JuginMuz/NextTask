@@ -6,6 +6,7 @@ type FocusTimerProps = {
   defaultMinutes?: number;
   taskTitle?: string;
   projectTitle?: string;
+  onRunningChange?: (running: boolean) => void;
 };
 
 const DEFAULT_MINUTES = 25;
@@ -17,6 +18,7 @@ function FocusTimer({
   defaultMinutes = DEFAULT_MINUTES,
   taskTitle,
   projectTitle,
+  onRunningChange,
 }: FocusTimerProps) {
   const { motion } = useTheme();
 
@@ -35,7 +37,11 @@ function FocusTimer({
     setTimeLeft(defaultMinutes * 60);
     setTotalSeconds(defaultMinutes * 60);
     setJustCompleted(false);
-    }, [defaultMinutes]);
+  }, [defaultMinutes]);
+
+  useEffect(() => {
+    onRunningChange?.(running);
+  }, [running, onRunningChange]);
 
   const displayedMinutes = Math.max(1, Math.ceil(timeLeft / 60));
 
@@ -176,11 +182,21 @@ function FocusTimer({
 
   return (
     <section
-      className="rounded-3xl p-6 shadow-sm"
+      id="focus-session-card"
+      className={`relative rounded-3xl p-6 shadow-sm ${
+        running ? "ring-2 ring-offset-2" : ""
+      }`}
       style={{
         backgroundColor: "var(--card)",
         border: "1px solid var(--border)",
+        ...(running
+          ? {
+              borderColor: "var(--primary)",
+              boxShadow: "0 0 0 4px var(--pending-soft)",
+            }
+          : {}),
       }}
+      aria-live="polite"
     >
       <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -198,17 +214,19 @@ function FocusTimer({
             backgroundColor: stateStyles.badgeBg,
             color: stateStyles.badgeText,
           }}
-          aria-live="polite"
         >
           {stateStyles.badgeLabel}
         </span>
       </div>
 
       <div
-        className="mt-5 rounded-2xl px-4 py-4"
+        className={`mt-5 rounded-2xl px-4 py-4 ${
+          running && !isReducedMotion ? "transition-all duration-500 ease-in-out" : ""
+        }`}
         style={{
           backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
+          border: running ? "1px solid var(--primary)" : "1px solid var(--border)",
+          boxShadow: running ? "0 0 0 3px var(--pending-soft)" : "none",
         }}
       >
         <p className="text-sm font-medium" style={{ color: "var(--muted)" }}>
@@ -228,7 +246,7 @@ function FocusTimer({
         Short task? Try 10–15 min. Longer task? Add time as needed.
       </div>
 
-      {isReducedMotion && (
+      {isReducedMotion && running && (
         <div
           className="mt-4 rounded-xl px-4 py-3 text-sm font-medium"
           style={{
@@ -237,7 +255,7 @@ function FocusTimer({
             border: "1px solid var(--border)",
           }}
         >
-          Reduced motion is active. Timer movement and animated transitions are minimised.
+          Focus mode is active. Motion-heavy effects are minimised because reduced motion is enabled.
         </div>
       )}
 
@@ -260,16 +278,13 @@ function FocusTimer({
 
           <div
             className="min-w-[10.5rem] text-center"
-            aria-live="polite"
             aria-label={`Time remaining ${formatTime(timeLeft)}`}
           >
             <div
               className={`text-6xl font-bold tracking-tight ${
                 running && !isReducedMotion ? "animate-timerPulse" : ""
               }`}
-              style={{
-                color: "var(--text)",
-              }}
+              style={{ color: "var(--text)" }}
             >
               {formatTime(timeLeft)}
             </div>
@@ -362,7 +377,6 @@ function FocusTimer({
           className={`mt-4 rounded-xl px-4 py-3 text-sm font-medium ${
             !isReducedMotion ? "transition-all duration-300" : ""
           }`}
-          aria-live="polite"
           style={{
             backgroundColor:
               justCompleted || isSaving ? "var(--success-soft)" : "var(--card)",

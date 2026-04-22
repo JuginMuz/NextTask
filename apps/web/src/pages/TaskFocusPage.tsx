@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import FocusTimer from "../components/FocusTimer";
@@ -8,6 +8,7 @@ import { createSession, type FocusSession } from "../lib/sessions";
 import { getToken } from "../lib/session";
 import { getTasks, updateTask, type Task } from "../lib/tasks";
 import Seo from "../components/Seo";
+import { useTheme } from "../lib/theme";
 
 const DEFAULT_FOCUS_MINUTES = 25;
 
@@ -15,6 +16,7 @@ function TaskFocusPage() {
   const { taskId } = useParams();
   const navigate = useNavigate();
   const token = getToken();
+  const { motion } = useTheme();
 
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -26,6 +28,11 @@ function TaskFocusPage() {
   const [focusDefaultMinutes, setFocusDefaultMinutes] = useState(
     DEFAULT_FOCUS_MINUTES
   );
+  const [focusModeActive, setFocusModeActive] = useState(false);
+
+  const focusAreaRef = useRef<HTMLDivElement | null>(null);
+
+  const isReducedMotion = motion === "reduced";
 
   useEffect(() => {
     try {
@@ -118,6 +125,17 @@ function TaskFocusPage() {
     void loadTaskFocusPage();
   }, [taskId, token, navigate]);
 
+  useEffect(() => {
+    if (!focusModeActive) return;
+    if (isReducedMotion) return;
+    if (!focusAreaRef.current) return;
+
+    focusAreaRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [focusModeActive, isReducedMotion]);
+
   async function handleCompleteTask() {
     if (!token || !task) return;
 
@@ -165,6 +183,15 @@ function TaskFocusPage() {
     [sessions]
   );
 
+  const deEmphasisStyle = focusModeActive
+    ? {
+        opacity: 0.28,
+        filter: "blur(1.5px)",
+        pointerEvents: "none" as const,
+        userSelect: "none" as const,
+      }
+    : {};
+
   return (
     <main
       className="min-h-screen px-6 py-8"
@@ -182,16 +209,21 @@ function TaskFocusPage() {
 
       <div className="mx-auto max-w-5xl space-y-6">
         <header
-          className="rounded-3xl px-6 py-5 shadow-sm"
+          className={`rounded-3xl px-6 py-5 shadow-sm ${
+            focusModeActive && !isReducedMotion ? "transition-all duration-500 ease-in-out" : ""
+          }`}
           style={{
             backgroundColor: "var(--card)",
             border: "1px solid var(--border)",
+            ...deEmphasisStyle,
           }}
+          aria-hidden={focusModeActive}
         >
           <Link
             to={project ? `/projects/${project.id}` : "/projects"}
             className="text-sm font-medium no-underline"
             style={{ color: "var(--muted)" }}
+            tabIndex={focusModeActive ? -1 : 0}
           >
             ← Back to project
           </Link>
@@ -209,7 +241,11 @@ function TaskFocusPage() {
         </header>
 
         {(pageError || sessionMessage) && (
-          <div className="space-y-3">
+          <div
+            className="space-y-3"
+            style={focusModeActive ? deEmphasisStyle : undefined}
+            aria-hidden={focusModeActive}
+          >
             {pageError && (
               <div
                 className="rounded-2xl px-4 py-3 text-sm"
@@ -267,19 +303,26 @@ function TaskFocusPage() {
           </section>
         ) : (
           <>
-            <FocusTimer
-              onComplete={handleTimerComplete}
-              defaultMinutes={focusDefaultMinutes}
-              taskTitle={task.title}
-              projectTitle={project.title}
-            />
+            <div ref={focusAreaRef}>
+              <FocusTimer
+                onComplete={handleTimerComplete}
+                defaultMinutes={focusDefaultMinutes}
+                taskTitle={task.title}
+                projectTitle={project.title}
+                onRunningChange={setFocusModeActive}
+              />
+            </div>
 
             <section
-              className="rounded-3xl p-6 shadow-sm"
+              className={`rounded-3xl p-6 shadow-sm ${
+                focusModeActive && !isReducedMotion ? "transition-all duration-500 ease-in-out" : ""
+              }`}
               style={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
+                ...deEmphasisStyle,
               }}
+              aria-hidden={focusModeActive}
             >
               <h2
                 className="text-2xl font-semibold"
@@ -325,11 +368,15 @@ function TaskFocusPage() {
             </section>
 
             <section
-              className="rounded-3xl p-6 shadow-sm"
+              className={`rounded-3xl p-6 shadow-sm ${
+                focusModeActive && !isReducedMotion ? "transition-all duration-500 ease-in-out" : ""
+              }`}
               style={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
+                ...deEmphasisStyle,
               }}
+              aria-hidden={focusModeActive}
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0 flex-1">
@@ -357,7 +404,7 @@ function TaskFocusPage() {
                   <button
                     type="button"
                     onClick={handleCompleteTask}
-                    disabled={task.completed}
+                    disabled={task.completed || focusModeActive}
                     className="rounded-xl px-5 py-3 text-sm font-semibold outline-none"
                     style={{
                       backgroundColor: task.completed
