@@ -247,15 +247,10 @@ function FocusTimer({
       </div>
 
       {isReducedMotion && running && (
-        <div
-          className="mt-4 rounded-xl px-4 py-3 text-sm font-medium"
-          style={{
-            backgroundColor: "var(--pending-soft)",
-            color: "var(--primary)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          Focus mode is active. Motion-heavy effects are minimised because reduced motion is enabled.
+        <div className="w-full flex justify-center mt-4">
+          <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-center max-w-xl text-sm">
+            Focus mode is active. Motion-heavy effects are minimised because reduced motion is enabled.
+          </div>
         </div>
       )}
 

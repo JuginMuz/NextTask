@@ -25,12 +25,13 @@ function AppLayout() {
         }}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <h1
-            className="text-xl font-bold"
+          <Link
+            to="/dashboard"
+            className="text-xl font-bold no-underline transition-opacity hover:opacity-80"
             style={{ color: "var(--primary)" }}
           >
             NextTask
-          </h1>
+          </Link>
 
           <nav className="flex items-center gap-2 text-sm font-semibold">
             <Link
@@ -81,11 +82,14 @@ function AppLayout() {
         </div>
       </main>
 
-      <footer
-        className="py-3 text-center text-xs"
-        style={{ color: "var(--muted)" }}
-      >
-        Privacy · Terms
+      <footer className="text-sm text-gray-500 flex justify-center gap-4 py-4">
+        <Link to="/privacy" className="hover:underline">
+          Privacy
+        </Link>
+        <span>·</span>
+        <Link to="/terms" className="hover:underline">
+          Terms
+        </Link>
       </footer>
     </div>
   );

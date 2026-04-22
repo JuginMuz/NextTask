@@ -10,6 +10,8 @@ import TaskFocusPage from "./pages/TaskFocusPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
           </Route>
         </Routes>
       </BrowserRouter>
